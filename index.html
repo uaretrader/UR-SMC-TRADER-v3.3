@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SMC Command v3.3</title>
+    <style>
+        body { font-family: sans-serif; background: #121212; color: #e0e0e0; margin: 0; padding: 5px; height: 100vh; overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; flex-shrink: 0; }
+        h2 { color: #f39c12; margin: 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+        .status { font-weight: bold; color: #2ecc71; font-size: 0.75rem; }
+        
+        /* TINGGI CHART TETAP 400PX */
+        .chart-container { height: 400px; width: 100%; border-radius: 8px; overflow: hidden; border: 1px solid #444; margin-bottom: 5px; flex-shrink: 0; }
+        
+        .card { background: #1e1e1e; border-radius: 8px; padding: 8px; border-left: 4px solid #f39c12; box-shadow: 0 4px 6px rgba(0,0,0,0.3); flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+        
+        h3 { margin: 0 0 4px 0; font-size: 0.7rem; color: #f39c12; border-bottom: 1px solid #333; padding-bottom: 2px; }
+
+        .fib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        input { width: 100%; padding: 8px; background: #333; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box; font-size: 0.85rem; outline: none; }
+        
+        .calc-btn { width: 100%; padding: 10px; background: #f39c12; border: none; border-radius: 5px; color: black; font-weight: bold; margin-top: 4px; margin-bottom: 4px; cursor: pointer; font-size: 0.8rem; text-transform: uppercase; }
+        
+        #setupAdvice { background: #2c3e50; padding: 6px 10px; border-radius: 5px; margin-bottom: 6px; border-left: 4px solid #3498db; font-size: 0.7rem; display: none; line-height: 1.3; }
+
+        /* KOLOM HASIL: Diperbesar sedikit ke bawah (padding vertikal ditambah) */
+        .result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; text-align: center; margin-bottom: 4px; }
+        .res-box { background: #222; padding: 8px 2px; border-radius: 5px; border: 1px solid #333; }
+        .res-label { font-size: 0.55rem; color: #aaa; display: block; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        /* ANGKA: Dibuat lebih besar dan lebih terang (putih bersih/terang) */
+        .res-val { font-weight: 800; font-size: 0.95rem; color: #ffffff; text-shadow: 0 0 2px rgba(0,0,0,0.5); }
+        
+        /* Warna Khusus Angka agar tetap kontras tapi terang */
+        .color-ote { color: #2fff7e !important; } /* Hijau lebih terang */
+        .color-tp { color: #4db8ff !important; }  /* Biru lebih terang */
+        .color-sl { color: #ff5c5c !important; }  /* Merah lebih terang */
+
+        .signature { text-align: center; color: #c0c0c0; font-size: 0.65rem; margin: auto 0; letter-spacing: 2px; opacity: 0.8; text-transform: lowercase; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>📊 SMC COMMAND v3.3</h2>
+        <span class="status">LIVE ●</span>
+    </div>
+
+    <div class="chart-container">
+        <div id="tv_v33" style="height: 100%;"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+        <script type="text/javascript">
+            new TradingView.widget({
+                "autosize": true, "symbol": "OANDA:XAUUSD", "interval": "15",
+                "timezone": "Asia/Jakarta", "theme": "dark", "style": "1",
+                "locale": "id", "hide_side_toolbar": true, 
+                "allow_symbol_change": true, "save_image": false,
+                "container_id": "tv_v33"
+            });
+        </script>
+    </div>
+
+    <div class="card">
+        <h3>📏 SMC Trading Setup</h3>
+        
+        <div class="fib-grid">
+            <div><input type="number" id="hiPrice" placeholder="Price" step="any"></div>
+            <div><input type="number" id="loPrice" placeholder="Price" step="any"></div>
+        </div>
+
+        <button class="calc-btn" onclick="processSMC()">SETUP CONFIRMATION</button>
+
+        <div id="setupAdvice"></div>
+
+        <div class="result-grid">
+            <div class="res-box"><span class="res-label">0.62</span><span id="r62" class="res-val">-</span></div>
+            <div class="res-box" style="border: 1px solid #2ecc71; background: #1a2e24;"><span class="res-label color-ote">0.705 (OTE)</span><span id="r705" class="res-val color-ote">-</span></div>
+            <div class="res-box"><span class="res-label">0.79</span><span id="r79" class="res-val">-</span></div>
+        </div>
+
+        <div class="result-grid">
+            <div class="res-box" style="border: 1px solid #e74c3c;"><span class="res-label color-sl">SL</span><span id="rSL" class="res-val color-sl">-</span></div>
+            <div class="res-box" style="border: 1px solid #3498db;"><span class="res-label color-tp">TP 1</span><span id="rTP1" class="res-val color-tp">-</span></div>
+            <div class="res-box" style="border: 1px solid #3498db;"><span class="res-label color-tp">TP 2</span><span id="rTP2" class="res-val color-tp">-</span></div>
+        </div>
+
+        <div class="signature">urtrader©</div>
+    </div>
+
+    <script>
+        function processSMC() {
+            const h = parseFloat(document.getElementById('hiPrice').value);
+            const l = parseFloat(document.getElementById('loPrice').value);
+            const box = document.getElementById('setupAdvice');
+            if (isNaN(h) || isNaN(l)) { alert("Mohon masukkan angka!"); return; }
+
+            const range = Math.abs(h - l);
+            let o62, o705, o79, sl, tp1, tp2;
+
+            if (h > l) {
+                o62 = l + (range * 0.38); o705 = l + (range * 0.295); o79 = l + (range * 0.21);
+                sl = l - (range * 0.1); tp1 = h; tp2 = h + (range * 0.27);
+                box.innerHTML = `🟢 <b>BULLISH SETUP:</b> Tunggu koreksi ke area <b>Discount</b> (${o705.toFixed(2)}). Antisipasi pantulan di Sweet Spot OTE.`;
+                box.style.borderLeft = "4px solid #2ecc71";
+            } else {
+                o62 = h - (range * 0.38); o705 = h - (range * 0.295); o79 = h - (range * 0.21);
+                sl = h + (range * 0.1); tp1 = l; tp2 = l - (range * 0.27);
+                box.innerHTML = `🔴 <b>BEARISH SETUP:</b> Tunggu harga retrace ke area <b>Premium</b> (${o705.toFixed(2)}). Cari reject di zona OTE.`;
+                box.style.borderLeft = "4px solid #e74c3c";
+            }
+            
+            box.style.display = "block";
+            document.getElementById('r62').innerText = o62.toFixed(3);
+            document.getElementById('r705').innerText = o705.toFixed(3);
+            document.getElementById('r79').innerText = o79.toFixed(3);
+            document.getElementById('rSL').innerText = sl.toFixed(3);
+            document.getElementById('rTP1').innerText = tp1.toFixed(3);
+            document.getElementById('rTP2').innerText = tp2.toFixed(3);
+        }
+        // Tambahkan baris ini di dalam bagian <script> kamu
+
+const inputs = [document.getElementById('hiPrice'), document.getElementById('loPrice')];
+
+inputs.forEach(input => {
+    input.addEventListener('keypress', function (e) {
+        // Mendeteksi jika tombol yang ditekan adalah 'Enter'
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Mencegah reload halaman
+            processSMC();       // Menjalankan fungsi kalkulasi yang sama dengan tombol
+            this.blur();        // Menutup keyboard HP secara otomatis setelah hitung
+        }
+    });
+});
+
+    </script>
+</body>
+</html>
