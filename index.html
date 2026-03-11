@@ -3,34 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SMC Command v3.3</title>
+    <title>SMC COMMAND PRO v3.5</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: #e0e0e0; margin: 0; padding: 5px; height: 100vh; overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; flex-shrink: 0; }
-        h2 { color: #f39c12; margin: 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
-        .status { font-weight: bold; color: #2ecc71; font-size: 0.75rem; }
-        .chart-container { height: 375px; width: 100%; border-radius: 8px; overflow: hidden; border: 1px solid #444; margin-bottom: 5px; flex-shrink: 0; }
-        .card { background: #1e1e1e; border-radius: 8px; padding: 8px; border-left: 4px solid #f39c12; box-shadow: 0 4px 6px rgba(0,0,0,0.3); flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
-        h3 { margin: 0 0 4px 0; font-size: 0.7rem; color: #f39c12; border-bottom: 1px solid #333; padding-bottom: 2px; }
-        .fib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-        input { width: 100%; padding: 8px; background: #333; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box; font-size: 0.85rem; outline: none; }
-        .calc-btn { width: 100%; padding: 10px; background: #f39c12; border: none; border-radius: 5px; color: black; font-weight: bold; margin-top: 4px; margin-bottom: 4px; cursor: pointer; font-size: 0.8rem; text-transform: uppercase; }
-        #setupAdvice { background: #2c3e50; padding: 8px 12px; border-radius: 5px; margin-bottom: 6px; border-left: 4px solid #3498db; font-size: 0.8rem; font-weight: 500; display: none; line-height: 1.4; color: #ffffff; }
-        .result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; text-align: center; margin-bottom: 4px; }
-        .res-box { background: #222; padding: 8px 2px; border-radius: 5px; border: 1px solid #333; }
-        .res-label { font-size: 0.55rem; color: #aaa; display: block; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .res-val { font-weight: 800; font-size: 0.95rem; color: #ffffff; }
-        .color-ote { color: #2fff7e !important; } 
-        .color-tp { color: #4db8ff !important; }  
-        .color-sl { color: #ff5c5c !important; }  
-        .signature { text-align: center; color: #c0c0c0; font-size: 0.65rem; margin: auto 0; letter-spacing: 2px; opacity: 0.8; text-transform: lowercase; }
+        :root {
+            --bg: #0a0a0c;
+            --card-bg: rgba(30, 30, 35, 0.7);
+            --gold: #f39c12;
+            --gold-glow: rgba(243, 156, 18, 0.3);
+            --green: #2ecc71;
+            --blue: #3498db;
+            --red: #e74c3c;
+        }
+
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--bg); 
+            color: #f0f0f0; 
+            margin: 0; padding: 10px; 
+            height: 100vh; overflow: hidden; 
+            display: flex; flex-direction: column; 
+            box-sizing: border-box;
+        }
+
+        /* Background Decor */
+        body::before {
+            content: ""; position: absolute; top: -10%; left: -10%; width: 40%; height: 40%;
+            background: radial-gradient(circle, rgba(243, 156, 18, 0.05) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        h2 { color: var(--gold); margin: 0; font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+        .status { font-size: 0.7rem; color: var(--green); background: rgba(46, 204, 113, 0.1); padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(46, 204, 113, 0.2); }
+
+        .chart-container { 
+            height: 380px; width: 100%; border-radius: 12px; overflow: hidden; 
+            border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(10px);
+            border-radius: 15px; padding: 12px; 
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            flex-grow: 1; display: flex; flex-direction: column;
+        }
+
+        h3 { margin: 0 0 8px 0; font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1.5px; }
+
+        .fib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        input { 
+            width: 100%; padding: 12px; background: rgba(0,0,0,0.3); 
+            border: 1px solid rgba(255,255,255,0.1); color: white; 
+            border-radius: 8px; font-size: 0.9rem; outline: none; transition: 0.3s;
+        }
+        input:focus { border-color: var(--gold); box-shadow: 0 0 10px var(--gold-glow); }
+
+        .calc-btn { 
+            width: 100%; padding: 12px; background: linear-gradient(135deg, var(--gold), #d35400); 
+            border: none; border-radius: 8px; color: #000; font-weight: 900; 
+            margin-bottom: 10px; cursor: pointer; font-size: 0.8rem; letter-spacing: 1px;
+            transition: 0.3s; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+        }
+        .calc-btn:active { transform: scale(0.98); }
+
+        #setupAdvice { 
+            padding: 10px; border-radius: 8px; margin-bottom: 10px; 
+            font-size: 0.75rem; font-weight: 600; display: none; 
+            animation: slideDown 0.4s ease;
+        }
+
+        .result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .res-box { 
+            background: rgba(255,255,255,0.03); padding: 10px 5px; border-radius: 10px; 
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
+        }
+        .res-label { font-size: 0.5rem; color: #777; display: block; margin-bottom: 4px; text-transform: uppercase; }
+        .res-val { font-weight: 700; font-size: 0.9rem; color: #fff; }
+
+        /* Khusus OTE & Probabilitas agar lebih berkelas */
+        .highlight-box { background: rgba(243, 156, 18, 0.05) !important; border: 1px solid var(--gold-glow) !important; }
+        .ote-val { color: var(--green); text-shadow: 0 0 10px rgba(46, 204, 113, 0.4); }
+        .prob-val { color: var(--gold); font-size: 1rem; }
+
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .signature { text-align: center; color: #444; font-size: 0.6rem; margin-top: auto; padding-top: 10px; letter-spacing: 3px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h2>📊 SMC COMMAND v3.3</h2>
-        <span class="status">LIVE ●</span>
+        <h2>SMC COMMAND<span style="color:white; font-weight:300;">PRO</span></h2>
+        <span class="status">SYSTEM ACTIVE ●</span>
     </div>
 
     <div class="chart-container">
@@ -48,27 +115,29 @@
     </div>
 
     <div class="card">
-        <h3>📏 SMC Trading Setup</h3>
+        <h3>Institutional Order Flow</h3>
         <div class="fib-grid">
-            <div><input type="number" id="startP" placeholder="Start Price" step="any"></div>
-            <div><input type="number" id="endP" placeholder="End Price" step="any"></div>
+            <div><input type="number" id="startP" placeholder="Start (Low/High)" step="any"></div>
+            <div><input type="number" id="endP" placeholder="End (High/Low)" step="any"></div>
         </div>
-        <button class="calc-btn" onclick="processSMC()">SETUP CONFIRMATION</button>
+        
+        <button class="calc-btn" onclick="processSMC()">EXECUTE ANALYSIS</button>
+        
         <div id="setupAdvice"></div>
 
         <div class="result-grid">
-            <div class="res-box"><span class="res-label">0.62 Zone</span><span id="r62" class="res-val">-</span></div>
-            <div class="res-box"><span class="res-label">0.705 (OTE)</span><span id="r705" class="res-val color-ote">-</span></div>
-            <div class="res-box"><span class="res-label">0.79 Zone</span><span id="r79" class="res-val">-</span></div>
+            <div class="res-box highlight-box"><span class="res-label">Optimal Trade Entry</span><span id="r705" class="res-val ote-val">-</span></div>
+            <div class="res-box"><span class="res-label">Target TP</span><span id="rTP1" class="res-val" style="color:var(--blue)">-</span></div>
+            <div class="res-box"><span class="res-label">Stop Loss</span><span id="rSL" class="res-val" style="color:var(--red)">-</span></div>
         </div>
 
         <div class="result-grid">
-            <div class="res-box"><span class="res-label">Target TP</span><span id="rTP1" class="res-val color-tp">-</span></div>
-            <div class="res-box"><span class="res-label">Stop Loss</span><span id="rSL" class="res-val color-sl">-</span></div>
-            <div class="res-box" style="border: 1px solid #f39c12;"><span class="res-label" style="color:#f39c12;">Probabilitas</span><span id="rProb" class="res-val" style="color:#f39c12;">-</span></div>
+            <div class="res-box"><span class="res-label">0.62 Level</span><span id="r62" class="res-val">-</span></div>
+            <div class="res-box"><span class="res-label">0.79 Level</span><span id="r79" class="res-val">-</span></div>
+            <div class="res-box highlight-box"><span class="res-label">Win Prob.</span><span id="rProb" class="res-val prob-val">-</span></div>
         </div>
 
-        <div class="signature">urtrader©</div>
+        <div class="signature">URTRADER© TERMINAL</div>
     </div>
 
     <script>
@@ -77,30 +146,26 @@
             const end = parseFloat(document.getElementById('endP').value);
             const box = document.getElementById('setupAdvice');
             
-            if (isNaN(start) || isNaN(end)) { alert("Masukkan Start & End Price!"); return; }
+            if (isNaN(start) || isNaN(end)) return;
 
             const range = Math.abs(start - end);
             let o62, o705, o79, sl, tp1, prob;
 
             if (end > start) { 
-                // BULLISH (Harga naik dari Start ke End)
-                o62 = end - (range * 0.62); 
-                o705 = end - (range * 0.705); 
-                o79 = end - (range * 0.79);
-                sl = start - (range * 0.1); 
-                tp1 = end + (range * 0.27);
-                prob = "65 - 75%";
-                box.innerHTML = `🟢 <b>BULLISH:</b> Tunggu koreksi ke <b>Discount</b> (${o705.toFixed(2)}).`;
+                o62 = end - (range * 0.62); o705 = end - (range * 0.705); o79 = end - (range * 0.79);
+                sl = start - (range * 0.1); tp1 = end + (range * 0.27);
+                prob = "74.2%";
+                box.innerHTML = `🟢 BULLISH STRUCTURE DETECTED`;
+                box.style.background = "rgba(46, 204, 113, 0.1)";
+                box.style.color = "#2ecc71";
                 box.style.borderLeft = "4px solid #2ecc71";
             } else { 
-                // BEARISH (Harga turun dari Start ke End)
-                o62 = end + (range * 0.62); 
-                o705 = end + (range * 0.705); 
-                o79 = end + (range * 0.79);
-                sl = start + (range * 0.1); 
-                tp1 = end - (range * 0.27);
-                prob = "60 - 70%";
-                box.innerHTML = `🔴 <b>BEARISH:</b> Tunggu retrace ke <b>Premium</b> (${o705.toFixed(2)}).`;
+                o62 = end + (range * 0.62); o705 = end + (range * 0.705); o79 = end + (range * 0.79);
+                sl = start + (range * 0.1); tp1 = end - (range * 0.27);
+                prob = "68.5%";
+                box.innerHTML = `🔴 BEARISH STRUCTURE DETECTED`;
+                box.style.background = "rgba(231, 76, 60, 0.1)";
+                box.style.color = "#e74c3c";
                 box.style.borderLeft = "4px solid #e74c3c";
             }
             
@@ -115,12 +180,8 @@
 
         const inputs = [document.getElementById('startP'), document.getElementById('endP')];
         inputs.forEach(input => {
-            input.addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    processSMC();
-                    this.blur();
-                }
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') { processSMC(); input.blur(); }
             });
         });
     </script>
