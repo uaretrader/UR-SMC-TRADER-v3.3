@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SMC APEX v9.7 - UI Precision</title>
+    <title>SMC APEX v9.7.1 - Final Locked</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&family=Outfit:wght@300;600;900&display=swap');
 
@@ -32,9 +32,9 @@
         }
         .brand { font-size: 0.65rem; letter-spacing: 2px; font-weight: 900; color: var(--gold); }
         
-        /* 1. FIXED: Perbesar Clock */
+        /* Jam Sistem diperbesar (v9.7 Standard) */
         .sys-live { 
-            font-size: 0.65rem; /* Ukuran diperbesar dari 0.45rem */
+            font-size: 0.65rem; 
             color: var(--neon-g); 
             font-family: 'JetBrains Mono'; 
             font-weight: 800;
@@ -46,6 +46,7 @@
             background: #000; flex-shrink: 0;
         }
 
+        /* News Ticker (Tanpa Fade Terminal) */
         .news-ticker {
             background: #111;
             border-top: 1px solid var(--border);
@@ -78,18 +79,18 @@
             border-top: 1px solid var(--border);
         }
 
-        /* 2. FIXED: Kurangi tinggi kolom & sesuaikan ukuran angka */
+        /* Input Hub Ramping (v9.7 Standard) */
         .input-hub { 
             display: grid; grid-template-columns: 1fr 1px 1fr;
             background: #000; border-radius: 10px; border: 1px solid var(--border);
             flex-shrink: 0;
-            height: 42px; /* Tinggi dikurangi agar lebih ramping */
+            height: 42px; 
             align-items: center;
         }
         .input-hub input { 
             width: 100%; padding: 0; background: transparent; border: none;
             color: #fff; font-family: 'JetBrains Mono'; 
-            font-size: 1.05rem; /* Angka disesuaikan agar seimbang */
+            font-size: 1.05rem; 
             text-align: center; outline: none;
             font-weight: 700;
         }
@@ -113,25 +114,32 @@
         .lbl { font-size: 0.45rem; color: #777; display: block; margin-bottom: 3px; text-transform: uppercase; }
         .val { font-family: 'JetBrains Mono'; font-size: 0.9rem; font-weight: 700; color: #fff; }
 
-        .footer-area { margin-top: auto; padding-bottom: 10px; text-align: center; flex-shrink: 0; }
+        /* Signature di Tengah Ruang Kosong (Request Final) */
+        .footer-area { 
+            flex-grow: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding-bottom: 5px; 
+        }
         .signature { font-size: 0.5rem; color: #444; letter-spacing: 2px; font-weight: 600; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="brand">SMC APEX <span>V9.7</span></div>
+        <div class="brand">SMC APEX <span>V9.7.1</span></div>
         <div id="clock" class="sys-live">SYS_READY</div>
     </div>
 
     <div class="chart-container">
-        <div id="tv_v97" style="height: 100%; width: 100%;"></div>
+        <div id="tv_v971" style="height: 100%; width: 100%;"></div>
     </div>
 
     <div class="news-ticker">
         <div class="news-label">MARKET_NEWS</div>
         <div class="news-content" id="news-feed">
-            DXY STRENGTHENING... WATCH XAUUSD FOR POTENTIAL BREAKOUT... FED MEETING SCHEDULED...
+            SYNCING SYSTEM... ANALYSIS READY... MONITORING XAUUSD... 
         </div>
     </div>
 
@@ -176,13 +184,12 @@
             "toolbar_bg": "#000000",
             "hide_side_toolbar": true, 
             "allow_symbol_change": true,
-            "container_id": "tv_v97"
+            "container_id": "tv_v971"
         });
 
         const newsItems = [
             "⚠️ FED Interest Rate Decision in 4 Hours",
             "📈 USD Index testing resistance - GOLD Volatility Alert",
-            "🔥 SMC Bias: Bearish rejection at Daily Supply",
             "📊 NFP Data release tomorrow at 20:30 GMT+7"
         ];
         document.getElementById('news-feed').innerHTML = newsItems.join(" &nbsp;&nbsp; | &nbsp;&nbsp; ");
@@ -220,6 +227,27 @@
                 stratLabel.style.color = "var(--neon-g)";
                 stratBox.style.borderLeftColor = "var(--neon-g)";
                 stratDesc.innerHTML = `Entry <b>Buy Limit</b> di <b>${o705.toFixed(2)}</b>. SL di bawah <b>${sl.toFixed(2)}</b>.`;
+            } else {
+                o62 = e + (range * 0.62); o705 = e + (range * 0.705); o79 = e + (range * 0.79);
+                sl = s + (range * 0.05); tp = e - (range * 0.27); wr = (81 + Math.random()*5).toFixed(1) + "%";
+                stratLabel.innerText = "Bearish Setup Confirmed";
+                stratLabel.style.color = "var(--neon-r)";
+                stratBox.style.borderLeftColor = "var(--neon-r)";
+                stratDesc.innerHTML = `Entry <b>Sell Limit</b> di <b>${o705.toFixed(2)}</b>. SL di atas <b>${sl.toFixed(2)}</b>.`;
+            }
+
+            document.getElementById('r62').innerText = o62.toFixed(3);
+            document.getElementById('r705').innerText = o705.toFixed(3);
+            document.getElementById('r79').innerText = o79.toFixed(3);
+            document.getElementById('rSL').innerText = sl.toFixed(3);
+            document.getElementById('rTP').innerText = tp.toFixed(3);
+            document.getElementById('rWin').innerText = wr;
+            document.activeElement.blur();
+        }
+    </script>
+</body>
+</html>
+
             } else {
                 o62 = e + (range * 0.62); o705 = e + (range * 0.705); o79 = e + (range * 0.79);
                 sl = s + (range * 0.05); tp = e - (range * 0.27); wr = (81 + Math.random()*5).toFixed(1) + "%";
