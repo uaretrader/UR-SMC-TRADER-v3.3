@@ -9,7 +9,7 @@
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; flex-shrink: 0; }
         h2 { color: #f39c12; margin: 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
         .status { font-weight: bold; color: #2ecc71; font-size: 0.75rem; }
-        .chart-container { height: 400px; width: 100%; border-radius: 8px; overflow: hidden; border: 1px solid #444; margin-bottom: 5px; flex-shrink: 0; }
+        .chart-container { height: 375px; width: 100%; border-radius: 8px; overflow: hidden; border: 1px solid #444; margin-bottom: 5px; flex-shrink: 0; }
         .card { background: #1e1e1e; border-radius: 8px; padding: 8px; border-left: 4px solid #f39c12; box-shadow: 0 4px 6px rgba(0,0,0,0.3); flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
         h3 { margin: 0 0 4px 0; font-size: 0.7rem; color: #f39c12; border-bottom: 1px solid #333; padding-bottom: 2px; }
         .fib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
@@ -57,14 +57,14 @@
         <div id="setupAdvice"></div>
 
         <div class="result-grid">
+            <div class="res-box"><span class="res-label">0.62 Zone</span><span id="r62" class="res-val">-</span></div>
             <div class="res-box"><span class="res-label">0.705 (OTE)</span><span id="r705" class="res-val color-ote">-</span></div>
-            <div class="res-box"><span class="res-label">Target TP</span><span id="rTP1" class="res-val color-tp">-</span></div>
-            <div class="res-box"><span class="res-label">Stop Loss</span><span id="rSL" class="res-val color-sl">-</span></div>
+            <div class="res-box"><span class="res-label">0.79 Zone</span><span id="r79" class="res-val">-</span></div>
         </div>
 
         <div class="result-grid">
-            <div class="res-box"><span class="res-label">0.62 Zone</span><span id="r62" class="res-val">-</span></div>
-            <div class="res-box"><span class="res-label">0.79 Zone</span><span id="r79" class="res-val">-</span></div>
+            <div class="res-box"><span class="res-label">Target TP</span><span id="rTP1" class="res-val color-tp">-</span></div>
+            <div class="res-box"><span class="res-label">Stop Loss</span><span id="rSL" class="res-val color-sl">-</span></div>
             <div class="res-box" style="border: 1px solid #f39c12;"><span class="res-label" style="color:#f39c12;">Probabilitas</span><span id="rProb" class="res-val" style="color:#f39c12;">-</span></div>
         </div>
 
@@ -125,5 +125,4 @@
         });
     </script>
 </body>
-    </html>
-    
+</html>
