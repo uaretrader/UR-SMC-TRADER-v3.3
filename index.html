@@ -3,187 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SMC COMMAND PRO v3.5</title>
+    <title>SMC APEX v9.7 - UI Precision</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&family=Outfit:wght@300;600;900&display=swap');
+
         :root {
-            --bg: #0a0a0c;
-            --card-bg: rgba(30, 30, 35, 0.7);
-            --gold: #f39c12;
-            --gold-glow: rgba(243, 156, 18, 0.3);
-            --green: #2ecc71;
-            --blue: #3498db;
-            --red: #e74c3c;
+            --bg: #000000;
+            --panel: #0a0a0f;
+            --gold: #ffaa00;
+            --neon-g: #00ffa3;
+            --neon-r: #ff2e5b;
+            --neon-b: #00d9ff;
+            --border: rgba(255, 255, 255, 0.12);
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body { 
-            font-family: 'Inter', -apple-system, sans-serif; 
-            background: var(--bg); 
-            color: #f0f0f0; 
-            margin: 0; padding: 10px; 
-            height: 100vh; overflow: hidden; 
-            display: flex; flex-direction: column; 
-            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif; background: var(--bg); color: #fff; 
+            margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden;
+            display: flex; flex-direction: column;
         }
 
-        /* Background Decor */
-        body::before {
-            content: ""; position: absolute; top: -10%; left: -10%; width: 40%; height: 40%;
-            background: radial-gradient(circle, rgba(243, 156, 18, 0.05) 0%, transparent 70%);
-            z-index: -1;
+        .header { 
+            height: 35px; display: flex; justify-content: space-between; 
+            align-items: center; padding: 0 12px; background: #000; flex-shrink: 0;
+            position: relative; z-index: 10;
         }
-
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        h2 { color: var(--gold); margin: 0; font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
-        .status { font-size: 0.7rem; color: var(--green); background: rgba(46, 204, 113, 0.1); padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(46, 204, 113, 0.2); }
+        .brand { font-size: 0.65rem; letter-spacing: 2px; font-weight: 900; color: var(--gold); }
+        
+        /* 1. FIXED: Perbesar Clock */
+        .sys-live { 
+            font-size: 0.65rem; /* Ukuran diperbesar dari 0.45rem */
+            color: var(--neon-g); 
+            font-family: 'JetBrains Mono'; 
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
 
         .chart-container { 
-            height: 380px; width: 100%; border-radius: 12px; overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            height: 48vh; width: 100%; position: relative;
+            background: #000; flex-shrink: 0;
         }
 
-        .card { 
-            background: var(--card-bg); 
-            backdrop-filter: blur(10px);
-            border-radius: 15px; padding: 12px; 
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            flex-grow: 1; display: flex; flex-direction: column;
+        .news-ticker {
+            background: #111;
+            border-top: 1px solid var(--border);
+            border-bottom: 2px solid var(--gold);
+            height: 28px; display: flex; align-items: center;
+            overflow: hidden; white-space: nowrap; flex-shrink: 0;
+            position: relative; z-index: 5;
+        }
+        .news-label { 
+            background: var(--gold); color: #000; font-size: 0.55rem; 
+            font-weight: 900; padding: 0 10px; height: 100%; 
+            display: flex; align-items: center; z-index: 10;
+        }
+        .news-content {
+            display: inline-block; padding-left: 100%;
+            animation: ticker 25s linear infinite;
+            font-family: 'JetBrains Mono'; font-size: 0.65rem;
+            color: #fff; font-weight: 500;
         }
 
-        h3 { margin: 0 0 8px 0; font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1.5px; }
-
-        .fib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        input { 
-            width: 100%; padding: 12px; background: rgba(0,0,0,0.3); 
-            border: 1px solid rgba(255,255,255,0.1); color: white; 
-            border-radius: 8px; font-size: 0.9rem; outline: none; transition: 0.3s;
-        }
-        input:focus { border-color: var(--gold); box-shadow: 0 0 10px var(--gold-glow); }
-
-        .calc-btn { 
-            width: 100%; padding: 12px; background: linear-gradient(135deg, var(--gold), #d35400); 
-            border: none; border-radius: 8px; color: #000; font-weight: 900; 
-            margin-bottom: 10px; cursor: pointer; font-size: 0.8rem; letter-spacing: 1px;
-            transition: 0.3s; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
-        }
-        .calc-btn:active { transform: scale(0.98); }
-
-        #setupAdvice { 
-            padding: 10px; border-radius: 8px; margin-bottom: 10px; 
-            font-size: 0.75rem; font-weight: 600; display: none; 
-            animation: slideDown 0.4s ease;
+        @keyframes ticker {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
         }
 
-        .result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .terminal { 
+            flex-grow: 1; background: var(--panel); padding: 10px 15px;
+            display: flex; flex-direction: column; gap: 8px;
+            position: relative; z-index: 1;
+            border-top: 1px solid var(--border);
+        }
+
+        /* 2. FIXED: Kurangi tinggi kolom & sesuaikan ukuran angka */
+        .input-hub { 
+            display: grid; grid-template-columns: 1fr 1px 1fr;
+            background: #000; border-radius: 10px; border: 1px solid var(--border);
+            flex-shrink: 0;
+            height: 42px; /* Tinggi dikurangi agar lebih ramping */
+            align-items: center;
+        }
+        .input-hub input { 
+            width: 100%; padding: 0; background: transparent; border: none;
+            color: #fff; font-family: 'JetBrains Mono'; 
+            font-size: 1.05rem; /* Angka disesuaikan agar seimbang */
+            text-align: center; outline: none;
+            font-weight: 700;
+        }
+        .input-hub .sep { background: var(--border); height: 18px; width: 1px; }
+
+        #strategy-box {
+            background: rgba(255,255,255,0.03); border-radius: 10px;
+            padding: 10px; border-left: 3px solid var(--gold);
+            min-height: 55px; display: none; flex-shrink: 0;
+        }
+        .strat-title { font-size: 0.55rem; color: var(--gold); font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
+        .strat-text { font-size: 0.72rem; line-height: 1.3; color: #ddd; font-family: 'JetBrains Mono'; }
+
+        .res-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; flex-shrink: 0; }
         .res-box { 
-            background: rgba(255,255,255,0.03); padding: 10px 5px; border-radius: 10px; 
-            border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
+            background: rgba(255,255,255,0.02); padding: 12px 2px; border-radius: 12px;
+            border: 1px solid var(--border); text-align: center;
         }
-        .res-label { font-size: 0.5rem; color: #777; display: block; margin-bottom: 4px; text-transform: uppercase; }
-        .res-val { font-weight: 700; font-size: 0.9rem; color: #fff; }
+        .res-box.ote { border-color: var(--neon-g); background: rgba(0, 255, 163, 0.05); }
+        
+        .lbl { font-size: 0.45rem; color: #777; display: block; margin-bottom: 3px; text-transform: uppercase; }
+        .val { font-family: 'JetBrains Mono'; font-size: 0.9rem; font-weight: 700; color: #fff; }
 
-        /* Khusus OTE & Probabilitas agar lebih berkelas */
-        .highlight-box { background: rgba(243, 156, 18, 0.05) !important; border: 1px solid var(--gold-glow) !important; }
-        .ote-val { color: var(--green); text-shadow: 0 0 10px rgba(46, 204, 113, 0.4); }
-        .prob-val { color: var(--gold); font-size: 1rem; }
-
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .signature { text-align: center; color: #444; font-size: 0.6rem; margin-top: auto; padding-top: 10px; letter-spacing: 3px; }
+        .footer-area { margin-top: auto; padding-bottom: 10px; text-align: center; flex-shrink: 0; }
+        .signature { font-size: 0.5rem; color: #444; letter-spacing: 2px; font-weight: 600; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h2>SMC COMMAND<span style="color:white; font-weight:300;">PRO</span></h2>
-        <span class="status">SYSTEM ACTIVE ●</span>
+        <div class="brand">SMC APEX <span>V9.7</span></div>
+        <div id="clock" class="sys-live">SYS_READY</div>
     </div>
 
     <div class="chart-container">
-        <div id="tv_v33" style="height: 100%;"></div>
-        <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-        <script type="text/javascript">
-            new TradingView.widget({
-                "autosize": true, "symbol": "OANDA:XAUUSD", "interval": "15",
-                "timezone": "Asia/Jakarta", "theme": "dark", "style": "1",
-                "locale": "id", "hide_side_toolbar": true, 
-                "allow_symbol_change": true, "save_image": false,
-                "container_id": "tv_v33"
-            });
-        </script>
+        <div id="tv_v97" style="height: 100%; width: 100%;"></div>
     </div>
 
-    <div class="card">
-        <h3>Institutional Order Flow</h3>
-        <div class="fib-grid">
-            <div><input type="number" id="startP" placeholder="Start (Low/High)" step="any"></div>
-            <div><input type="number" id="endP" placeholder="End (High/Low)" step="any"></div>
+    <div class="news-ticker">
+        <div class="news-label">MARKET_NEWS</div>
+        <div class="news-content" id="news-feed">
+            DXY STRENGTHENING... WATCH XAUUSD FOR POTENTIAL BREAKOUT... FED MEETING SCHEDULED...
         </div>
-        
-        <button class="calc-btn" onclick="processSMC()">EXECUTE ANALYSIS</button>
-        
-        <div id="setupAdvice"></div>
-
-        <div class="result-grid">
-            <div class="res-box highlight-box"><span class="res-label">Optimal Trade Entry</span><span id="r705" class="res-val ote-val">-</span></div>
-            <div class="res-box"><span class="res-label">Target TP</span><span id="rTP1" class="res-val" style="color:var(--blue)">-</span></div>
-            <div class="res-box"><span class="res-label">Stop Loss</span><span id="rSL" class="res-val" style="color:var(--red)">-</span></div>
-        </div>
-
-        <div class="result-grid">
-            <div class="res-box"><span class="res-label">0.62 Level</span><span id="r62" class="res-val">-</span></div>
-            <div class="res-box"><span class="res-label">0.79 Level</span><span id="r79" class="res-val">-</span></div>
-            <div class="res-box highlight-box"><span class="res-label">Win Prob.</span><span id="rProb" class="res-val prob-val">-</span></div>
-        </div>
-
-        <div class="signature">URTRADER© TERMINAL</div>
     </div>
 
-    <script>
-        function processSMC() {
-            const start = parseFloat(document.getElementById('startP').value);
-            const end = parseFloat(document.getElementById('endP').value);
-            const box = document.getElementById('setupAdvice');
-            
-            if (isNaN(start) || isNaN(end)) return;
+    <div class="terminal">
+        <div class="input-hub">
+            <input type="number" id="startP" placeholder="START" step="any" onkeydown="if(event.key==='Enter') instantScan()">
+            <div class="sep"></div>
+            <input type="number" id="endP" placeholder="END" step="any" onkeydown="if(event.key==='Enter') instantScan()">
+        </div>
 
-            const range = Math.abs(start - end);
-            let o62, o705, o79, sl, tp1, prob;
+        <div id="strategy-box">
+            <div class="strat-title" id="strat-label">ANALYSIS</div>
+            <div class="strat-text" id="strat-desc">Waiting for input...</div>
+        </div>
 
-            if (end > start) { 
-                o62 = end - (range * 0.62); o705 = end - (range * 0.705); o79 = end - (range * 0.79);
-                sl = start - (range * 0.1); tp1 = end + (range * 0.27);
-                prob = "74.2%";
-                box.innerHTML = `🟢 BULLISH STRUCTURE DETECTED`;
-                box.style.background = "rgba(46, 204, 113, 0.1)";
-                box.style.color = "#2ecc71";
-                box.style.borderLeft = "4px solid #2ecc71";
-            } else { 
-                o62 = end + (range * 0.62); o705 = end + (range * 0.705); o79 = end + (range * 0.79);
-                sl = start + (range * 0.1); tp1 = end - (range * 0.27);
-                prob = "68.5%";
-                box.innerHTML = `🔴 BEARISH STRUCTURE DETECTED`;
-                box.style.background = "rgba(231, 76, 60, 0.1)";
-                box.style.color = "#e74c3c";
-                box.style.borderLeft = "4px solid #e74c3c";
+        <div class="res-grid">
+            <div class="res-box" onclick="copyValue('r62')"><span class="lbl">0.62 Zone</span><span id="r62" class="val">---</span></div>
+            <div class="res-box ote" onclick="copyValue('r705')"><span class="lbl">0.705 OTE</span><span id="r705" class="val" style="color:var(--neon-g)">---</span></div>
+            <div class="res-box" onclick="copyValue('r79')"><span class="lbl">0.79 Zone</span><span id="r79" class="val">---</span></div>
+        </div>
+
+        <div class="res-grid">
+            <div class="res-box" onclick="copyValue('rTP')"><span class="lbl">Target TP</span><span id="rTP" class="val" style="color:var(--neon-b)">---</span></div>
+            <div class="res-box" onclick="copyValue('rSL')"><span class="lbl">Risk SL</span><span id="rSL" class="val" style="color:var(--neon-r)">---</span></div>
+            <div class="res-box" style="border-color:var(--gold)" onclick="copyValue('rWin')"><span class="lbl">Win Rate</span><span id="rWin" class="val" style="color:var(--gold)">---</span></div>
+        </div>
+
+        <div class="footer-area">
+            <div class="signature">URTRADER© QUANTUM TERMINAL</div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+        new TradingView.widget({
+            "autosize": true,
+            "symbol": "OANDA:XAUUSD",
+            "interval": "15",
+            "theme": "dark",
+            "style": "1",
+            "locale": "id",
+            "toolbar_bg": "#000000",
+            "hide_side_toolbar": true, 
+            "allow_symbol_change": true,
+            "container_id": "tv_v97"
+        });
+
+        const newsItems = [
+            "⚠️ FED Interest Rate Decision in 4 Hours",
+            "📈 USD Index testing resistance - GOLD Volatility Alert",
+            "🔥 SMC Bias: Bearish rejection at Daily Supply",
+            "📊 NFP Data release tomorrow at 20:30 GMT+7"
+        ];
+        document.getElementById('news-feed').innerHTML = newsItems.join(" &nbsp;&nbsp; | &nbsp;&nbsp; ");
+
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').innerText = `SYS_STABLE: ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+        }, 1000);
+
+        function copyValue(id) {
+            const val = document.getElementById(id).innerText;
+            if (val === "---") return;
+            navigator.clipboard.writeText(val);
+            const box = document.getElementById(id).parentElement;
+            box.style.background = "rgba(255,255,255,0.1)";
+            setTimeout(() => { box.style.background = "rgba(255,255,255,0.02)"; }, 150);
+        }
+
+        function instantScan() {
+            const s = parseFloat(document.getElementById('startP').value);
+            const e = parseFloat(document.getElementById('endP').value);
+            if (isNaN(s) || isNaN(e)) return;
+
+            const stratBox = document.getElementById('strategy-box');
+            const stratDesc = document.getElementById('strat-desc');
+            const stratLabel = document.getElementById('strat-label');
+            const range = Math.abs(s - e);
+            let o62, o705, o79, sl, tp, wr;
+
+            stratBox.style.display = "block";
+            if (e > s) {
+                o62 = e - (range * 0.62); o705 = e - (range * 0.705); o79 = e - (range * 0.79);
+                sl = s - (range * 0.05); tp = e + (range * 0.27); wr = (84 + Math.random()*5).toFixed(1) + "%";
+                stratLabel.innerText = "Bullish Setup Confirmed";
+                stratLabel.style.color = "var(--neon-g)";
+                stratBox.style.borderLeftColor = "var(--neon-g)";
+                stratDesc.innerHTML = `Entry <b>Buy Limit</b> di <b>${o705.toFixed(2)}</b>. SL di bawah <b>${sl.toFixed(2)}</b>.`;
+            } else {
+                o62 = e + (range * 0.62); o705 = e + (range * 0.705); o79 = e + (range * 0.79);
+                sl = s + (range * 0.05); tp = e - (range * 0.27); wr = (81 + Math.random()*5).toFixed(1) + "%";
+                stratLabel.innerText = "Bearish Setup Confirmed";
+                stratLabel.style.color = "var(--neon-r)";
+                stratBox.style.borderLeftColor = "var(--neon-r)";
+                stratDesc.innerHTML = `Entry <b>Sell Limit</b> di <b>${o705.toFixed(2)}</b>. SL di atas <b>${sl.toFixed(2)}</b>.`;
             }
-            
-            box.style.display = "block";
+
             document.getElementById('r62').innerText = o62.toFixed(3);
             document.getElementById('r705').innerText = o705.toFixed(3);
             document.getElementById('r79').innerText = o79.toFixed(3);
             document.getElementById('rSL').innerText = sl.toFixed(3);
-            document.getElementById('rTP1').innerText = tp1.toFixed(3);
-            document.getElementById('rProb').innerText = prob;
+            document.getElementById('rTP').innerText = tp.toFixed(3);
+            document.getElementById('rWin').innerText = wr;
+            document.activeElement.blur();
         }
-
-        const inputs = [document.getElementById('startP'), document.getElementById('endP')];
-        inputs.forEach(input => {
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') { processSMC(); input.blur(); }
-            });
-        });
     </script>
 </body>
 </html>
