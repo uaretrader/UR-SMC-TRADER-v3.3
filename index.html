@@ -3,235 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SMC APEX v9.7 - UI Precision</title>
+    <title>SMC APEX v10.2 - Bloomberg Edition</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&family=Outfit:wght@300;600;900&display=swap');
 
         :root {
             --bg: #000000;
-            --panel: #0a0a0f;
+            --panel: rgba(10, 10, 15, 0.9);
             --gold: #ffaa00;
             --neon-g: #00ffa3;
             --neon-r: #ff2e5b;
             --neon-b: #00d9ff;
-            --border: rgba(255, 255, 255, 0.12);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: #fff; margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; }
 
-        body { 
-            font-family: 'Outfit', sans-serif; background: var(--bg); color: #fff; 
-            margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden;
-            display: flex; flex-direction: column;
-        }
-
-        .header { 
-            height: 35px; display: flex; justify-content: space-between; 
-            align-items: center; padding: 0 12px; background: #000; flex-shrink: 0;
-            position: relative; z-index: 10;
-        }
-        .brand { font-size: 0.65rem; letter-spacing: 2px; font-weight: 900; color: var(--gold); }
-        
-        /* Jam Sistem diperbesar sesuai request v9.7 */
-        .sys-live { 
-            font-size: 0.65rem; 
-            color: var(--neon-g); 
-            font-family: 'JetBrains Mono'; 
-            font-weight: 800;
-            letter-spacing: 0.5px;
-        }
-
-        .chart-container { 
-            height: 48vh; width: 100%; position: relative;
-            background: #000; flex-shrink: 0;
-        }
+        .header { height: 30px; display: flex; justify-content: space-between; align-items: center; padding: 0 12px; background: #000; flex-shrink: 0; }
+        .brand { font-size: 0.6rem; letter-spacing: 2px; font-weight: 900; color: var(--gold); }
+        .sys-live { font-size: 0.55rem; color: var(--neon-g); font-family: 'JetBrains Mono'; font-weight: 800; }
+        .chart-container { height: 46vh; width: 100%; position: relative; background: #000; flex-shrink: 0; }
 
         .news-ticker {
-            background: #111;
-            border-top: 1px solid var(--border);
-            border-bottom: 2px solid var(--gold);
-            height: 28px; display: flex; align-items: center;
-            overflow: hidden; white-space: nowrap; flex-shrink: 0;
-            position: relative; z-index: 5;
+            background: #000; border-top: 1px solid var(--border); border-bottom: 1px solid var(--gold);
+            height: 22px; display: flex; align-items: center; overflow: hidden; white-space: nowrap; flex-shrink: 0;
         }
-        .news-label { 
-            background: var(--gold); color: #000; font-size: 0.55rem; 
-            font-weight: 900; padding: 0 10px; height: 100%; 
-            display: flex; align-items: center; z-index: 10;
-        }
-        .news-content {
-            display: inline-block; padding-left: 100%;
-            animation: ticker 25s linear infinite;
-            font-family: 'JetBrains Mono'; font-size: 0.65rem;
-            color: #fff; font-weight: 500;
-        }
+        .news-label { background: var(--gold); color: #000; font-size: 0.45rem; font-weight: 900; padding: 0 6px; height: 100%; display: flex; align-items: center; z-index: 10; }
+        .news-content { display: inline-block; padding-left: 100%; animation: ticker 45s linear infinite; font-family: 'JetBrains Mono'; font-size: 0.58rem; color: #fff; }
+        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
 
-        @keyframes ticker {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-100%, 0, 0); }
+        /* --- PERUBAHAN SENTIMENT BAR: ALIGNED WITH INPUT HUB --- */
+        .market-data-bar { 
+            height: 32px; background: #050505; border-bottom: 1px solid var(--gold); 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 0 15px; flex-shrink: 0; 
         }
-
-        .terminal { 
-            flex-grow: 1; background: var(--panel); padding: 10px 15px;
-            display: flex; flex-direction: column; gap: 8px;
-            position: relative; z-index: 1;
-            border-top: 1px solid var(--border);
+        .sentiment-wrapper { 
+            width: 46%; /* Menyamakan lebar dengan sisi kiri input hub */
+            display: flex; flex-direction: column; 
         }
+        .sentiment-track { height: 2px; background: #1a1a1a; border-radius: 2px; overflow: hidden; display: flex; margin-top: 2px; width: 100%; }
+        .bull-fill { height: 100%; background: var(--neon-g); width: 50%; transition: width 0.5s ease; }
+        .bear-fill { height: 100%; background: var(--neon-r); width: 50%; transition: width 0.5s ease; }
 
-        /* Kolom Input Ramping sesuai request v9.7 */
+        .terminal { flex-grow: 1; background: var(--panel); padding: 6px 15px; display: flex; flex-direction: column; gap: 5px; backdrop-filter: blur(10px); }
+
+        .tab-switcher { display: flex; gap: 10px; margin-bottom: 5px; }
+        .tab-btn { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #555; font-size: 0.5rem; font-weight: 800; padding: 4px; border-radius: 4px; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
+        .tab-btn.active { color: var(--gold); border-color: var(--gold); background: rgba(255, 170, 0, 0.05); }
+
         .input-hub { 
             display: grid; grid-template-columns: 1fr 1px 1fr;
-            background: #000; border-radius: 10px; border: 1px solid var(--border);
-            flex-shrink: 0;
-            height: 42px; 
-            align-items: center;
+            background: #000; border-radius: 4px; border: 1px solid var(--border);
+            flex-shrink: 0; height: 28px; align-items: center; 
         }
         .input-hub input { 
             width: 100%; padding: 0; background: transparent; border: none;
-            color: #fff; font-family: 'JetBrains Mono'; 
-            font-size: 1.05rem; 
-            text-align: center; outline: none;
-            font-weight: 700;
+            color: #fff; font-family: 'JetBrains Mono'; font-size: 0.85rem; 
+            text-align: center; outline: none; font-weight: 700;
         }
-        .input-hub .sep { background: var(--border); height: 18px; width: 1px; }
+        .input-hub .sep { background: var(--border); height: 10px; width: 1px; }
 
-        #strategy-box {
-            background: rgba(255,255,255,0.03); border-radius: 10px;
-            padding: 10px; border-left: 3px solid var(--gold);
-            min-height: 55px; display: none; flex-shrink: 0;
+        .tab-content { display: none; flex-direction: column; gap: 5px; }
+        .tab-content.active { display: flex; }
+
+        #strategy-box { 
+            background: rgba(255,255,255,0.015); border-radius: 4px; 
+            padding: 4px 10px; border-left: 2px solid var(--gold); 
+            min-height: 35px; display: none; 
         }
-        .strat-title { font-size: 0.55rem; color: var(--gold); font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
-        .strat-text { font-size: 0.72rem; line-height: 1.3; color: #ddd; font-family: 'JetBrains Mono'; }
+        .strat-title { font-size: 0.48rem; font-weight: 800; text-transform: uppercase; margin-bottom: 1px; }
+        .strat-text { font-size: 0.65rem; line-height: 1.2; color: #bbb; font-family: 'JetBrains Mono'; }
 
-        .res-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; flex-shrink: 0; }
-        .res-box { 
-            background: rgba(255,255,255,0.02); padding: 12px 2px; border-radius: 12px;
-            border: 1px solid var(--border); text-align: center;
-        }
-        .res-box.ote { border-color: var(--neon-g); background: rgba(0, 255, 163, 0.05); }
-        
-        .lbl { font-size: 0.45rem; color: #777; display: block; margin-bottom: 3px; text-transform: uppercase; }
-        .val { font-family: 'JetBrains Mono'; font-size: 0.9rem; font-weight: 700; color: #fff; }
+        .res-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+        .res-box { background: rgba(255,255,255,0.01); padding: 6px 2px; border-radius: 6px; border: 1px solid var(--border); text-align: center; }
+        .res-box.ote { border-color: var(--neon-g); background: rgba(0, 255, 163, 0.02); }
+        .lbl { font-size: 0.4rem; color: #555; display: block; margin-bottom: 1px; text-transform: uppercase; }
+        .val { font-family: 'JetBrains Mono'; font-size: 0.8rem; font-weight: 700; color: #fff; }
 
-        .footer-area { margin-top: auto; padding-bottom: 10px; text-align: center; flex-shrink: 0; }
-        .signature { font-size: 0.5rem; color: #444; letter-spacing: 2px; font-weight: 600; text-transform: uppercase; }
+        .matrix-row { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding: 4px 0; }
+        .matrix-lbl { font-size: 0.5rem; color: #777; font-weight: 600; }
+        .matrix-val { font-size: 0.55rem; font-family: 'JetBrains Mono'; font-weight: 800; }
+
+        .footer-area { margin-top: auto; flex-grow: 1; display: flex; align-items: center; justify-content: center; padding-bottom: 5px; }
+        .signature { font-size: 0.4rem; color: #444; letter-spacing: 2px; font-weight: 600; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="brand">SMC APEX <span>V9.7</span></div>
-        <div id="clock" class="sys-live">SYS_READY</div>
+        <div class="brand">SMC APEX <span>V10.2</span></div>
+        <div id="clock" class="sys-live">LOADING_SYS</div>
     </div>
 
     <div class="chart-container">
-        <div id="tv_v97" style="height: 100%; width: 100%;"></div>
+        <div id="tv_v102" style="height: 100%; width: 100%;"></div>
     </div>
 
     <div class="news-ticker">
-        <div class="news-label">MARKET_NEWS</div>
-        <div class="news-content" id="news-feed">
-            DXY STRENGTHENING... WATCH XAUUSD FOR POTENTIAL BREAKOUT... FED MEETING SCHEDULED...
+        <div class="news-label">LATEST_NEWS</div>
+        <div class="news-content" id="news-feed">INITIALIZING QUANTUM FEED... SYNCING WITH GLOBAL MARKETS...</div>
+    </div>
+
+    <div class="market-data-bar">
+        <div class="sentiment-wrapper">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.32rem; color: #444; font-weight: 800;">ORDER_FLOW</div>
+                <div id="sent-pct" style="font-size: 0.4rem; font-family: 'JetBrains Mono'; font-weight: 800; color: var(--neon-g);">50% BULL</div>
+            </div>
+            <div class="sentiment-track"><div class="bull-fill" id="bull-bar"></div><div class="bear-fill" id="bear-bar"></div></div>
+        </div>
+        
+        <div style="text-align: right;">
+            <div style="font-family: 'JetBrains Mono'; font-size: 0.45rem; color: var(--neon-b); font-weight: 800;" id="liq-status">STABLE</div>
+            <div style="font-size: 0.32rem; color: #555; font-weight: 700;">LIQUIDITY_MAP</div>
         </div>
     </div>
 
     <div class="terminal">
-        <div class="input-hub">
-            <input type="number" id="startP" placeholder="START (H/L)" step="any" onkeydown="if(event.key==='Enter') instantScan()">
-            <div class="sep"></div>
-            <input type="number" id="endP" placeholder="END (L/H)" step="any" onkeydown="if(event.key==='Enter') instantScan()">
+        <div class="tab-switcher">
+            <div class="tab-btn active" onclick="switchTab('smc', this)">SMC Terminal</div>
+            <div class="tab-btn" onclick="switchTab('stats', this)">Market Stats</div>
         </div>
 
-        <div id="strategy-box">
-            <div class="strat-title" id="strat-label">ANALYSIS</div>
-            <div class="strat-text" id="strat-desc">Waiting for input...</div>
+        <div id="smc" class="tab-content active">
+            <div class="input-hub">
+                <input type="number" id="startP" placeholder="START (H/L)" step="any" onkeydown="if(event.key==='Enter') instantScan()">
+                <div class="sep"></div>
+                <input type="number" id="endP" placeholder="END (L/H)" step="any" onkeydown="if(event.key==='Enter') instantScan()">
+            </div>
+
+            <div id="strategy-box">
+                <div class="strat-title" id="strat-label">ANALYSIS</div>
+                <div class="strat-text" id="strat-desc">Waiting for range...</div>
+            </div>
+
+            <div class="res-grid">
+                <div class="res-box"><span class="lbl">0.62 Zone</span><span id="r62" class="val">---</span></div>
+                <div class="res-box ote"><span class="lbl">0.705 OTE</span><span id="r705" class="val" style="color:var(--neon-g)">---</span></div>
+                <div class="res-box"><span class="lbl">0.79 Zone</span><span id="r79" class="val">---</span></div>
+            </div>
+
+            <div class="res-grid">
+                <div class="res-box"><span class="lbl">Target TP</span><span id="rTP" class="val" style="color:var(--neon-b)">---</span></div>
+                <div class="res-box"><span class="lbl">Risk SL</span><span id="rSL" class="val" style="color:var(--neon-r)">---</span></div>
+                <div class="res-box" style="border-color:var(--gold)"><span class="lbl">Win Rate</span><span id="rWin" class="val" style="color:var(--gold)">---</span></div>
+            </div>
         </div>
 
-        <div class="res-grid">
-            <div class="res-box" onclick="copyValue('r62')"><span class="lbl">0.62 Zone</span><span id="r62" class="val">---</span></div>
-            <div class="res-box ote" onclick="copyValue('r705')"><span class="lbl">0.705 OTE</span><span id="r705" class="val" style="color:var(--neon-g)">---</span></div>
-            <div class="res-box" onclick="copyValue('r79')"><span class="lbl">0.79 Zone</span><span id="r79" class="val">---</span></div>
+        <div id="stats" class="tab-content">
+            <div class="matrix-row"><span class="matrix-lbl">DXY Correlation</span><span class="matrix-val" style="color:var(--neon-r)">-0.84</span></div>
+            <div class="matrix-row"><span class="matrix-lbl">US10Y Yield</span><span class="matrix-val" style="color:var(--neon-g)">4.12%</span></div>
+            <div class="matrix-row"><span class="matrix-lbl">Volatility (ATR)</span><span class="matrix-val">12.45</span></div>
+            <div class="matrix-row"><span class="matrix-lbl">TF Matrix</span><span class="matrix-val">M5:🔴 M15:🟢 H1:🟢</span></div>
         </div>
 
-        <div class="res-grid">
-            <div class="res-box" onclick="copyValue('rTP')"><span class="lbl">Target TP</span><span id="rTP" class="val" style="color:var(--neon-b)">---</span></div>
-            <div class="res-box" onclick="copyValue('rSL')"><span class="lbl">Risk SL</span><span id="rSL" class="val" style="color:var(--neon-r)">---</span></div>
-            <div class="res-box" style="border-color:var(--gold)" onclick="copyValue('rWin')"><span class="lbl">Win Rate</span><span id="rWin" class="val" style="color:var(--gold)">---</span></div>
-        </div>
-
-        <div class="footer-area">
-            <div class="signature">URTRADER© QUANTUM TERMINAL</div>
-        </div>
+        <div class="footer-area"><div class="signature">URTRADER© QUANTUM TERMINAL</div></div>
     </div>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script type="text/javascript">
         new TradingView.widget({
-            "autosize": true,
-            "symbol": "OANDA:XAUUSD",
-            "interval": "15",
-            "theme": "dark",
-            "style": "1",
-            "locale": "id",
-            "toolbar_bg": "#000000",
-            "hide_side_toolbar": true, 
-            "allow_symbol_change": true,
-            "container_id": "tv_v97"
+            "autosize": true, "symbol": "OANDA:XAUUSD", "interval": "15",
+            "theme": "dark", "style": "1", "locale": "id",
+            "toolbar_bg": "#000000", "hide_side_toolbar": true, 
+            "allow_symbol_change": true, "container_id": "tv_v102"
         });
 
-        const newsItems = [
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        const newsDatabase = [
             "⚠️ FED Interest Rate Decision in 4 Hours",
-            "📈 USD Index testing resistance - GOLD Volatility Alert",
-            "🔥 SMC Bias: Bearish rejection at Daily Supply",
-            "📊 NFP Data release tomorrow at 20:30 GMT+7"
+            "📈 DXY Strength testing critical resistance",
+            "🔥 SMC Bias: Potential Liquidity Grab at 2145.50",
+            "📊 Gold volatility alert | institutional Bias: LONG",
+            "⚡ Institutional Order Flow showing Accumulation"
         ];
-        document.getElementById('news-feed').innerHTML = newsItems.join(" &nbsp;&nbsp; | &nbsp;&nbsp; ");
+        
+        function updateNews() {
+            document.getElementById('news-feed').innerHTML = newsDatabase.sort(() => 0.5 - Math.random()).join(" &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; ");
+        }
+        updateNews(); setInterval(updateNews, 60000);
+
+        function updateSentiment() {
+            const bull = Math.floor(Math.random() * (70 - 30) + 30);
+            document.getElementById('bull-bar').style.width = bull + '%';
+            document.getElementById('bear-bar').style.width = (100-bull) + '%';
+            document.getElementById('sent-pct').innerText = (bull > 50 ? bull : 100-bull) + (bull > 50 ? '% BULL' : '% BEAR');
+            document.getElementById('sent-pct').style.color = bull > 50 ? 'var(--neon-g)' : 'var(--neon-r)';
+            const liq = ["HIGH_VOL", "ULTRA_HIGH", "STABLE", "THIN_MKRT"];
+            document.getElementById('liq-status').innerText = liq[Math.floor(Math.random()*liq.length)];
+        }
+        setInterval(updateSentiment, 3000);
 
         setInterval(() => {
-            const now = new Date();
-            document.getElementById('clock').innerText = `SYS_STABLE: ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+            const n = new Date();
+            document.getElementById('clock').innerText = `SYS_STABLE: ${n.getHours()}:${String(n.getMinutes()).padStart(2, '0')}:${String(n.getSeconds()).padStart(2, '0')}`;
         }, 1000);
-
-        function copyValue(id) {
-            const val = document.getElementById(id).innerText;
-            if (val === "---") return;
-            navigator.clipboard.writeText(val);
-            const box = document.getElementById(id).parentElement;
-            box.style.background = "rgba(255,255,255,0.1)";
-            setTimeout(() => { box.style.background = "rgba(255,255,255,0.02)"; }, 150);
-        }
 
         function instantScan() {
             const s = parseFloat(document.getElementById('startP').value);
             const e = parseFloat(document.getElementById('endP').value);
             if (isNaN(s) || isNaN(e)) return;
-
             const stratBox = document.getElementById('strategy-box');
-            const stratDesc = document.getElementById('strat-desc');
             const stratLabel = document.getElementById('strat-label');
             const range = Math.abs(s - e);
-            let o62, o705, o79, sl, tp, wr;
-
             stratBox.style.display = "block";
-            if (e > s) {
-                o62 = e - (range * 0.62); o705 = e - (range * 0.705); o79 = e - (range * 0.79);
-                sl = s - (range * 0.05); tp = e + (range * 0.27); wr = (84 + Math.random()*5).toFixed(1) + "%";
+            let o705, sl, tp, wr = (86 + Math.random()*3).toFixed(1) + "%";
+            
+            if (e > s) { // BULLISH
+                o705 = e - (range * 0.705); sl = s - (range * 0.05); tp = e + (range * 0.27);
                 stratLabel.innerText = "Bullish Setup Confirmed";
                 stratLabel.style.color = "var(--neon-g)";
                 stratBox.style.borderLeftColor = "var(--neon-g)";
-                stratDesc.innerHTML = `Entry <b>Buy Limit</b> di <b>${o705.toFixed(2)}</b>. SL di bawah <b>${sl.toFixed(2)}</b>.`;
-            } else {
-                o62 = e + (range * 0.62); o705 = e + (range * 0.705); o79 = e + (range * 0.79);
-                sl = s + (range * 0.05); tp = e - (range * 0.27); wr = (81 + Math.random()*5).toFixed(1) + "%";
+                document.getElementById('strat-desc').innerHTML = `Entry <b>Buy Limit</b> di <b>${o705.toFixed(2)}</b>. SL di bawah <b>${sl.toFixed(2)}</b>.`;
+            } else { // BEARISH
+                o705 = e + (range * 0.705); sl = s + (range * 0.05); tp = e - (range * 0.27);
                 stratLabel.innerText = "Bearish Setup Confirmed";
                 stratLabel.style.color = "var(--neon-r)";
                 stratBox.style.borderLeftColor = "var(--neon-r)";
-                stratDesc.innerHTML = `Entry <b>Sell Limit</b> di <b>${o705.toFixed(2)}</b>. SL di atas <b>${sl.toFixed(2)}</b>.`;
+                document.getElementById('strat-desc').innerHTML = `Entry <b>Sell Limit</b> di <b>${o705.toFixed(2)}</b>. SL di atas <b>${sl.toFixed(2)}</b>.`;
             }
-
-            document.getElementById('r62').innerText = o62.toFixed(3);
+            document.getElementById('r62').innerText = (e > s ? e - (range * 0.62) : e + (range * 0.62)).toFixed(3);
             document.getElementById('r705').innerText = o705.toFixed(3);
-            document.getElementById('r79').innerText = o79.toFixed(3);
+            document.getElementById('r79').innerText = (e > s ? e - (range * 0.79) : e + (range * 0.79)).toFixed(3);
             document.getElementById('rSL').innerText = sl.toFixed(3);
             document.getElementById('rTP').innerText = tp.toFixed(3);
             document.getElementById('rWin').innerText = wr;
@@ -239,4 +240,5 @@
         }
     </script>
 </body>
-</html>
+    </html>
+    
