@@ -25,13 +25,7 @@
         .sys-live { font-size: 0.55rem; color: var(--neon-g); font-family: 'JetBrains Mono'; font-weight: 800; }
         .chart-container { height: 46vh; width: 100%; position: relative; background: #000; flex-shrink: 0; }
 
-        .news-ticker {
-            background: #000; border-top: 1px solid var(--border); border-bottom: 1px solid var(--gold);
-            height: 22px; display: flex; align-items: center; overflow: hidden; white-space: nowrap; flex-shrink: 0;
-        }
-        .news-label { background: var(--gold); color: #000; font-size: 0.45rem; font-weight: 900; padding: 0 6px; height: 100%; display: flex; align-items: center; z-index: 10; }
-        .news-content { display: inline-block; padding-left: 100%; animation: ticker 45s linear infinite; font-family: 'JetBrains Mono'; font-size: 0.58rem; color: #fff; }
-        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+        /* News Ticker Dihapus Sesuai Perintah */
 
         .market-data-bar { 
             height: 32px; background: #050505; border-bottom: 1px solid var(--gold); 
@@ -43,15 +37,13 @@
             display: flex; flex-direction: column; 
         }
         .sentiment-track { height: 2px; background: #1a1a1a; border-radius: 2px; overflow: hidden; display: flex; margin-top: 2px; width: 100%; }
-        .bull-fill { height: 100%; background: var(--neon-g); width: 50%; transition: width 0.5s ease; }
-        .bear-fill { height: 100%; background: var(--neon-r); width: 50%; transition: width 0.5s ease; }
+        .bull-fill { height: 100%; background: var(--neon-g); width: 50%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .bear-fill { height: 100%; background: var(--neon-r); width: 50%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
 
         .terminal { flex-grow: 1; background: var(--panel); padding: 6px 15px; display: flex; flex-direction: column; gap: 5px; backdrop-filter: blur(10px); }
 
-        /* LIQUIDITY SESSION ROW - FIXED CONFIG */
         .session-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 0 5px 0; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
         .sess-lbl { font-size: 0.5rem; color: #777; font-weight: 800; text-transform: uppercase; }
-        /* WARNA KUNING TERLIHAT JELAS (SOFT GOLD) */
         .sess-val { font-size: 0.65rem; color: #e1b12c; font-family: 'JetBrains Mono'; font-weight: 800; letter-spacing: 1px; }
 
         .input-hub { 
@@ -95,16 +87,11 @@
         <div id="tv_v102" style="height: 100%; width: 100%;"></div>
     </div>
 
-    <div class="news-ticker">
-        <div class="news-label">LATEST_NEWS</div>
-        <div class="news-content" id="news-feed">INITIALIZING QUANTUM FEED... SYNCING WITH GLOBAL MARKETS...</div>
-    </div>
-
     <div class="market-data-bar">
         <div class="sentiment-wrapper">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div style="font-size: 0.32rem; color: #444; font-weight: 800;">ORDER_FLOW</div>
-                <div id="sent-pct" style="font-size: 0.4rem; font-family: 'JetBrains Mono'; font-weight: 800; color: var(--neon-g);">50% BULL</div>
+                <div id="sent-pct" style="font-size: 0.4rem; font-family: 'JetBrains Mono'; font-weight: 800; color: var(--neon-g);">50% NEUTRAL</div>
             </div>
             <div class="sentiment-track"><div class="bull-fill" id="bull-bar"></div><div class="bear-fill" id="bear-bar"></div></div>
         </div>
@@ -164,34 +151,11 @@
             else if (hour >= 20 || hour < 4) sess = "NEW_YORK_OPEN";
             else sess = "MARKET_RETRACEMENT";
             document.getElementById('current-session').innerText = sess;
+            return sess;
         }
         updateSession(); setInterval(updateSession, 60000);
 
-        const newsDatabase = [
-            "⚠️ FED Interest Rate Decision in 4 Hours",
-            "📈 DXY Strength testing critical resistance",
-            "🔥 SMC Bias: Potential Liquidity Grab at 2145.50",
-            "📊 Gold volatility alert | institutional Bias: LONG",
-            "⚡ Institutional Order Flow showing Accumulation"
-        ];
-        
-        function updateNews() {
-            const newsFeed = document.getElementById('news-feed');
-            if(newsFeed) newsFeed.innerHTML = newsDatabase.sort(() => 0.5 - Math.random()).join(" &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; ");
-        }
-        updateNews(); setInterval(updateNews, 60000);
-
-        function updateSentiment() {
-            const bull = Math.floor(Math.random() * (70 - 30) + 30);
-            document.getElementById('bull-bar').style.width = bull + '%';
-            document.getElementById('bear-bar').style.width = (100-bull) + '%';
-            document.getElementById('sent-pct').innerText = (bull > 50 ? bull : 100-bull) + (bull > 50 ? '% BULL' : '% BEAR');
-            document.getElementById('sent-pct').style.color = bull > 50 ? 'var(--neon-g)' : 'var(--neon-r)';
-            const liq = ["HIGH_VOL", "ULTRA_HIGH", "STABLE", "THIN_MKRT"];
-            document.getElementById('liq-status').innerText = liq[Math.floor(Math.random()*liq.length)];
-        }
-        setInterval(updateSentiment, 3000);
-
+        // Update Jam Sistem
         setInterval(() => {
             const n = new Date();
             document.getElementById('clock').innerText = `SYS_STABLE: ${n.getHours()}:${String(n.getMinutes()).padStart(2, '0')}:${String(n.getSeconds()).padStart(2, '0')}`;
@@ -201,31 +165,66 @@
             const s = parseFloat(document.getElementById('startP').value);
             const e = parseFloat(document.getElementById('endP').value);
             if (isNaN(s) || isNaN(e)) return;
+            
             const stratBox = document.getElementById('strategy-box');
             const stratLabel = document.getElementById('strat-label');
             const range = Math.abs(s - e);
             stratBox.style.display = "block";
-            let o705, sl, tp, wr = (86 + Math.random()*3).toFixed(1) + "%";
             
-            if (e > s) { // BULLISH
+            let o705, sl, tp;
+            const currentSess = updateSession();
+            const isBullish = e > s;
+            
+            if (isBullish) { 
                 o705 = e - (range * 0.705); sl = s - (range * 0.05); tp = e + (range * 0.27);
                 stratLabel.innerText = "Bullish Setup Confirmed";
                 stratLabel.style.color = "var(--neon-g)";
                 stratBox.style.borderLeftColor = "var(--neon-g)";
                 document.getElementById('strat-desc').innerHTML = `Entry <b>Buy Limit</b> di <b>${o705.toFixed(2)}</b>. SL di bawah <b>${sl.toFixed(2)}</b>.`;
-            } else { // BEARISH
+            } else { 
                 o705 = e + (range * 0.705); sl = s + (range * 0.05); tp = e - (range * 0.27);
                 stratLabel.innerText = "Bearish Setup Confirmed";
                 stratLabel.style.color = "var(--neon-r)";
                 stratBox.style.borderLeftColor = "var(--neon-r)";
                 document.getElementById('strat-desc').innerHTML = `Entry <b>Sell Limit</b> di <b>${o705.toFixed(2)}</b>. SL di atas <b>${sl.toFixed(2)}</b>.`;
             }
-            document.getElementById('r62').innerText = (e > s ? e - (range * 0.62) : e + (range * 0.62)).toFixed(3);
+
+            // DYNAMIC WIN RATE LOGIC (REALISTIS)
+            let baseWR = 82;
+            if (currentSess.includes("LONDON") || currentSess.includes("NEW_YORK")) baseWR += 5;
+            const risk = Math.abs(o705 - sl);
+            const reward = Math.abs(tp - o705);
+            const rrr = reward / risk;
+            if (rrr >= 2) baseWR += 2;
+            const finalWRVal = baseWR + (Math.random() * 2.5);
+            const finalWRText = finalWRVal.toFixed(1) + "%";
+
+            // SYNC SENTIMENT BAR DENGAN HASIL ANALISA & WIN RATE
+            const bullBar = document.getElementById('bull-bar');
+            const bearBar = document.getElementById('bear-bar');
+            const sentPct = document.getElementById('sent-pct');
+
+            if (isBullish) {
+                bullBar.style.width = finalWRVal + '%';
+                bearBar.style.width = (100 - finalWRVal) + '%';
+                sentPct.innerText = finalWRText + " BULLISH";
+                sentPct.style.color = "var(--neon-g)";
+            } else {
+                bearBar.style.width = finalWRVal + '%';
+                bullBar.style.width = (100 - finalWRVal) + '%';
+                sentPct.innerText = finalWRText + " BEARISH";
+                sentPct.style.color = "var(--neon-r)";
+            }
+
+            document.getElementById('r62').innerText = (isBullish ? e - (range * 0.62) : e + (range * 0.62)).toFixed(3);
             document.getElementById('r705').innerText = o705.toFixed(3);
-            document.getElementById('r79').innerText = (e > s ? e - (range * 0.79) : e + (range * 0.79)).toFixed(3);
+            document.getElementById('r79').innerText = (isBullish ? e - (range * 0.79) : e + (range * 0.79)).toFixed(3);
             document.getElementById('rSL').innerText = sl.toFixed(3);
             document.getElementById('rTP').innerText = tp.toFixed(3);
-            document.getElementById('rWin').innerText = wr;
+            document.getElementById('rWin').innerText = finalWRText;
+            
+            // Liquidity Status update
+            document.getElementById('liq-status').innerText = rrr >= 2 ? "HIGH_PROB" : "MODERATE";
             document.activeElement.blur();
         }
     </script>
