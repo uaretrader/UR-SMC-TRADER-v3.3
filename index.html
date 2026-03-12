@@ -33,14 +33,13 @@
         .news-content { display: inline-block; padding-left: 100%; animation: ticker 45s linear infinite; font-family: 'JetBrains Mono'; font-size: 0.58rem; color: #fff; }
         @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
 
-        /* --- PERUBAHAN SENTIMENT BAR: ALIGNED WITH INPUT HUB --- */
         .market-data-bar { 
             height: 32px; background: #050505; border-bottom: 1px solid var(--gold); 
             display: flex; align-items: center; justify-content: space-between; 
             padding: 0 15px; flex-shrink: 0; 
         }
         .sentiment-wrapper { 
-            width: 46%; /* Menyamakan lebar dengan sisi kiri input hub */
+            width: 46%; 
             display: flex; flex-direction: column; 
         }
         .sentiment-track { height: 2px; background: #1a1a1a; border-radius: 2px; overflow: hidden; display: flex; margin-top: 2px; width: 100%; }
@@ -49,9 +48,11 @@
 
         .terminal { flex-grow: 1; background: var(--panel); padding: 6px 15px; display: flex; flex-direction: column; gap: 5px; backdrop-filter: blur(10px); }
 
-        .tab-switcher { display: flex; gap: 10px; margin-bottom: 5px; }
-        .tab-btn { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #555; font-size: 0.5rem; font-weight: 800; padding: 4px; border-radius: 4px; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
-        .tab-btn.active { color: var(--gold); border-color: var(--gold); background: rgba(255, 170, 0, 0.05); }
+        /* LIQUIDITY SESSION ROW - FIXED CONFIG */
+        .session-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 0 5px 0; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
+        .sess-lbl { font-size: 0.5rem; color: #777; font-weight: 800; text-transform: uppercase; }
+        /* WARNA KUNING TERLIHAT JELAS (SOFT GOLD) */
+        .sess-val { font-size: 0.65rem; color: #e1b12c; font-family: 'JetBrains Mono'; font-weight: 800; letter-spacing: 1px; }
 
         .input-hub { 
             display: grid; grid-template-columns: 1fr 1px 1fr;
@@ -64,9 +65,6 @@
             text-align: center; outline: none; font-weight: 700;
         }
         .input-hub .sep { background: var(--border); height: 10px; width: 1px; }
-
-        .tab-content { display: none; flex-direction: column; gap: 5px; }
-        .tab-content.active { display: flex; }
 
         #strategy-box { 
             background: rgba(255,255,255,0.015); border-radius: 4px; 
@@ -81,10 +79,6 @@
         .res-box.ote { border-color: var(--neon-g); background: rgba(0, 255, 163, 0.02); }
         .lbl { font-size: 0.4rem; color: #555; display: block; margin-bottom: 1px; text-transform: uppercase; }
         .val { font-family: 'JetBrains Mono'; font-size: 0.8rem; font-weight: 700; color: #fff; }
-
-        .matrix-row { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding: 4px 0; }
-        .matrix-lbl { font-size: 0.5rem; color: #777; font-weight: 600; }
-        .matrix-val { font-size: 0.55rem; font-family: 'JetBrains Mono'; font-weight: 800; }
 
         .footer-area { margin-top: auto; flex-grow: 1; display: flex; align-items: center; justify-content: center; padding-bottom: 5px; }
         .signature { font-size: 0.4rem; color: #444; letter-spacing: 2px; font-weight: 600; text-transform: uppercase; }
@@ -122,41 +116,32 @@
     </div>
 
     <div class="terminal">
-        <div class="tab-switcher">
-            <div class="tab-btn active" onclick="switchTab('smc', this)">SMC Terminal</div>
-            <div class="tab-btn" onclick="switchTab('stats', this)">Market Stats</div>
+        <div class="session-row">
+            <span class="sess-lbl">Liquidity Session</span>
+            <span id="current-session" class="sess-val">DETECTING...</span>
         </div>
 
-        <div id="smc" class="tab-content active">
-            <div class="input-hub">
-                <input type="number" id="startP" placeholder="START (H/L)" step="any" onkeydown="if(event.key==='Enter') instantScan()">
-                <div class="sep"></div>
-                <input type="number" id="endP" placeholder="END (L/H)" step="any" onkeydown="if(event.key==='Enter') instantScan()">
-            </div>
-
-            <div id="strategy-box">
-                <div class="strat-title" id="strat-label">ANALYSIS</div>
-                <div class="strat-text" id="strat-desc">Waiting for range...</div>
-            </div>
-
-            <div class="res-grid">
-                <div class="res-box"><span class="lbl">0.62 Zone</span><span id="r62" class="val">---</span></div>
-                <div class="res-box ote"><span class="lbl">0.705 OTE</span><span id="r705" class="val" style="color:var(--neon-g)">---</span></div>
-                <div class="res-box"><span class="lbl">0.79 Zone</span><span id="r79" class="val">---</span></div>
-            </div>
-
-            <div class="res-grid">
-                <div class="res-box"><span class="lbl">Target TP</span><span id="rTP" class="val" style="color:var(--neon-b)">---</span></div>
-                <div class="res-box"><span class="lbl">Risk SL</span><span id="rSL" class="val" style="color:var(--neon-r)">---</span></div>
-                <div class="res-box" style="border-color:var(--gold)"><span class="lbl">Win Rate</span><span id="rWin" class="val" style="color:var(--gold)">---</span></div>
-            </div>
+        <div class="input-hub">
+            <input type="number" id="startP" placeholder="START (H/L)" step="any" onkeydown="if(event.key==='Enter') instantScan()">
+            <div class="sep"></div>
+            <input type="number" id="endP" placeholder="END (L/H)" step="any" onkeydown="if(event.key==='Enter') instantScan()">
         </div>
 
-        <div id="stats" class="tab-content">
-            <div class="matrix-row"><span class="matrix-lbl">DXY Correlation</span><span class="matrix-val" style="color:var(--neon-r)">-0.84</span></div>
-            <div class="matrix-row"><span class="matrix-lbl">US10Y Yield</span><span class="matrix-val" style="color:var(--neon-g)">4.12%</span></div>
-            <div class="matrix-row"><span class="matrix-lbl">Volatility (ATR)</span><span class="matrix-val">12.45</span></div>
-            <div class="matrix-row"><span class="matrix-lbl">TF Matrix</span><span class="matrix-val">M5:🔴 M15:🟢 H1:🟢</span></div>
+        <div id="strategy-box">
+            <div class="strat-title" id="strat-label">ANALYSIS</div>
+            <div class="strat-text" id="strat-desc">Waiting for range...</div>
+        </div>
+
+        <div class="res-grid">
+            <div class="res-box"><span class="lbl">0.62 Zone</span><span id="r62" class="val">---</span></div>
+            <div class="res-box ote"><span class="lbl">0.705 OTE</span><span id="r705" class="val" style="color:var(--neon-g)">---</span></div>
+            <div class="res-box"><span class="lbl">0.79 Zone</span><span id="r79" class="val">---</span></div>
+        </div>
+
+        <div class="res-grid">
+            <div class="res-box"><span class="lbl">Target TP</span><span id="rTP" class="val" style="color:var(--neon-b)">---</span></div>
+            <div class="res-box"><span class="lbl">Risk SL</span><span id="rSL" class="val" style="color:var(--neon-r)">---</span></div>
+            <div class="res-box" style="border-color:var(--gold)"><span class="lbl">Win Rate</span><span id="rWin" class="val" style="color:var(--gold)">---</span></div>
         </div>
 
         <div class="footer-area"><div class="signature">URTRADER© QUANTUM TERMINAL</div></div>
@@ -171,12 +156,16 @@
             "allow_symbol_change": true, "container_id": "tv_v102"
         });
 
-        function switchTab(tabId, btn) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            btn.classList.add('active');
+        function updateSession() {
+            const hour = new Date().getHours();
+            let sess = "";
+            if (hour >= 7 && hour < 14) sess = "SYDNEY_TOKYO_OPEN";
+            else if (hour >= 14 && hour < 20) sess = "LONDON_OPEN";
+            else if (hour >= 20 || hour < 4) sess = "NEW_YORK_OPEN";
+            else sess = "MARKET_RETRACEMENT";
+            document.getElementById('current-session').innerText = sess;
         }
+        updateSession(); setInterval(updateSession, 60000);
 
         const newsDatabase = [
             "⚠️ FED Interest Rate Decision in 4 Hours",
@@ -187,7 +176,8 @@
         ];
         
         function updateNews() {
-            document.getElementById('news-feed').innerHTML = newsDatabase.sort(() => 0.5 - Math.random()).join(" &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; ");
+            const newsFeed = document.getElementById('news-feed');
+            if(newsFeed) newsFeed.innerHTML = newsDatabase.sort(() => 0.5 - Math.random()).join(" &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; ");
         }
         updateNews(); setInterval(updateNews, 60000);
 
@@ -240,5 +230,4 @@
         }
     </script>
 </body>
-    </html>
-    
+</html>
