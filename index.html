@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SMC APEX v10.8 - Pro Refined</title>
+    <title>SMC APEX v10.9 - Pips Master Edition</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&family=Outfit:wght@300;600;900&display=swap');
 
@@ -24,7 +24,6 @@
         .brand { font-size: 0.55rem; letter-spacing: 2px; font-weight: 900; color: var(--gold); }
         .sys-live { font-size: 0.5rem; color: var(--neon-g); font-family: 'JetBrains Mono'; font-weight: 800; }
         
-        /* KUNCI: Layout Chart Responsif */
         .chart-container { height: 48vh; width: 100%; position: relative; background: #000; flex-shrink: 0; }
 
         .terminal { flex-grow: 1; background: var(--panel); padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
@@ -63,7 +62,6 @@
         .lbl { font-size: 0.4rem; color: #444; display: block; text-transform: uppercase; margin-bottom: 1px; }
         .val { font-family: 'JetBrains Mono'; font-size: 0.75rem; font-weight: 800; color: #fff; }
 
-        /* KUNCI: Signature Naik ke Ruang Kosong */
         .footer-area { margin: 10px 0; text-align: center; }
         .signature { font-size: 0.45rem; letter-spacing: 3px; font-weight: 600; text-transform: uppercase; color: #333; }
         
@@ -79,12 +77,12 @@
     <div id="toast">COPIED</div>
 
     <div class="header">
-        <div class="brand">SMC APEX AI <span>V10.8</span></div>
+        <div class="brand">SMC APEX AI <span>V10.9</span></div>
         <div id="clock" class="sys-live">00:00:00</div>
     </div>
 
     <div class="chart-container">
-        <div id="tv_v108" style="height: 100%; width: 100%;"></div>
+        <div id="tv_v109" style="height: 100%; width: 100%;"></div>
     </div>
 
     <div class="terminal">
@@ -120,31 +118,17 @@
         <div class="res-grid">
             <div class="res-box" onclick="copyVal(this)"><span class="lbl">Target TP</span><span id="rTP" class="val" style="color:var(--neon-b)">---</span></div>
             <div class="res-box" onclick="copyVal(this)"><span class="lbl">Risk SL</span><span id="rSL" class="val" style="color:var(--neon-r)">---</span></div>
-            <div class="res-box" style="border-color:var(--gold)" onclick="copyVal(this)"><span class="lbl">Win Rate</span><span id="rWin" class="val" style="color:var(--gold)">---</span></div>
+            <div class="res-box" style="border-color:var(--gold)" onclick="copyVal(this)"><span class="lbl">Total Pips</span><span id="rPips" class="val" style="color:var(--gold)">+0.0 P</span></div>
         </div>
     </div>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script type="text/javascript">
-        // KUNCI: Reset Chart ke Konfigurasi Real-Time & Responsif
         new TradingView.widget({
-            "autosize": true,
-            "symbol": "OANDA:XAUUSD",
-            "interval": "15",
-            "timezone": "Asia/Jakarta",
-            "theme": "dark",
-            "style": "1",
-            "locale": "id",
-            "toolbar_bg": "#000000",
-            "enable_publishing": false,
-            "hide_side_toolbar": true,
-            "allow_symbol_change": true,
-            "details": false,
-            "hotlist": false,
-            "calendar": false,
-            "show_interval_ticker": true,
-            "withdateranges": false,
-            "container_id": "tv_v108"
+            "autosize": true, "symbol": "OANDA:XAUUSD", "interval": "15",
+            "timezone": "Asia/Jakarta", "theme": "dark", "style": "1", "locale": "id",
+            "toolbar_bg": "#000000", "enable_publishing": false, "hide_side_toolbar": true,
+            "allow_symbol_change": true, "container_id": "tv_v109"
         });
 
         function showToast(msg) {
@@ -189,22 +173,24 @@
             
             const range = Math.abs(s - e);
             const isBull = e > s;
-            const sess = updateSession();
             
             let r62 = isBull ? e - (range * 0.62) : e + (range * 0.62);
             let o705 = isBull ? e - (range * 0.705) : e + (range * 0.705);
             let r79 = isBull ? e - (range * 0.79) : e + (range * 0.79);
             let sl = isBull ? s - (range * 0.05) : s + (range * 0.05);
             let tp = isBull ? e + (range * 0.27) : e - (range * 0.27);
-            const rrr = Math.abs(tp - o705) / Math.abs(o705 - sl);
+            
+            // Kalkulasi Pips (Standard XAUUSD)
+            const pipsValue = (Math.abs(tp - o705) * 10).toFixed(1);
 
             const aiBox = document.getElementById('strategy-box');
             document.getElementById('strat-label').innerText = `[AI_SENSE: ${range > 12 ? 'TRENDING' : 'STABLE'}]`;
             document.getElementById('strat-label').style.color = isBull ? "var(--neon-g)" : "var(--neon-r)";
             
+            // DETAIL STRATEGI ANTARA 0.62, 0.705, 0.79
             document.getElementById('strat-desc').innerHTML = isBull ? 
-                `Entry <b>Buy Optimal</b> di level <b>0.705 (${o705.toFixed(2)})</b>. Perhatikan level <b>0.62 (${r62.toFixed(2)})</b> sebagai konfirmasi awal.<br><span style="color:var(--gold); font-size:0.5rem;">> LOGIC: Setup Bullish RRR 1:${rrr.toFixed(1)}. SL di ${sl.toFixed(2)}.</span>` :
-                `Entry <b>Sell Optimal</b> di level <b>0.705 (${o705.toFixed(2)})</b>. Level <b>0.62 (${r62.toFixed(2)})</b> sebagai resistance awal.<br><span style="color:var(--gold); font-size:0.5rem;">> LOGIC: Setup Bearish RRR 1:${rrr.toFixed(1)}. SL di ${sl.toFixed(2)}.</span>`;
+                `Level <b>0.62 (${r62.toFixed(2)})</b> adalah konfirmasi awal zona diskon. Titik <b>0.705 (${o705.toFixed(2)})</b> adalah OTE terbaik untuk entri Buy. Lindungi posisi di <b>0.79 (${r79.toFixed(2)})</b> sebagai batas struktur terakhir sebelum SL.<br><span style="color:var(--gold); font-size:0.5rem;">> LOGIC: Potensi profit ${pipsValue} Pips dengan RRR tinggi.</span>` :
+                `Level <b>0.62 (${r62.toFixed(2)})</b> bertindak sebagai resistance awal. Eksekusi Sell utama di <b>0.705 (${o705.toFixed(2)})</b> (Sweet Spot). Pertahankan validitas di <b>0.79 (${r79.toFixed(2)})</b> sebagai pertahanan Smart Money.<br><span style="color:var(--gold); font-size:0.5rem;">> LOGIC: Potensi drop ${pipsValue} Pips. Validasi rejection di OTE.</span>`;
             
             aiBox.style.display = "block";
             aiBox.style.borderLeftColor = isBull ? "var(--neon-g)" : "var(--neon-r)";
@@ -214,12 +200,11 @@
             document.getElementById('r79').innerText = r79.toFixed(3);
             document.getElementById('rSL').innerText = sl.toFixed(3);
             document.getElementById('rTP').innerText = tp.toFixed(3);
-            document.getElementById('rWin').innerText = (86 + Math.random() * 4).toFixed(1) + "%";
+            document.getElementById('rPips').innerText = "+" + pipsValue + " P";
 
             toggleInput(false);
         }
         updateSession();
     </script>
 </body>
-    </html>
-    
+</html>
