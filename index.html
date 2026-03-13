@@ -134,6 +134,7 @@
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script type="text/javascript">
+        // KONFIGURASI CHART TRADINGVIEW
         new TradingView.widget({
             "autosize": true, "symbol": "OANDA:XAUUSD", "interval": "15",
             "theme": "dark", "style": "1", "locale": "id",
@@ -141,6 +142,7 @@
             "allow_symbol_change": true, "container_id": "tv_v102"
         });
 
+        // DETEKSI SESI MARKET GLOBAL
         function updateSession() {
             const hour = new Date().getHours();
             let sess = "";
@@ -153,11 +155,13 @@
         }
         updateSession(); setInterval(updateSession, 60000);
 
+        // UPDATE JAM SISTEM (REAL-TIME)
         setInterval(() => {
             const n = new Date();
             document.getElementById('clock').innerText = `SYS_STABLE: ${n.getHours()}:${String(n.getMinutes()).padStart(2, '0')}:${String(n.getSeconds()).padStart(2, '0')}`;
         }, 1000);
 
+        // FUNGSI UTAMA KALKULATOR OTE
         function instantScan() {
             const s = parseFloat(document.getElementById('startP').value);
             const e = parseFloat(document.getElementById('endP').value);
@@ -172,20 +176,26 @@
             const currentSess = updateSession();
             const isBullish = e > s;
             
+            // LOGIKA EKSTRUKSI ANALISA (EKSPLISIT)
             if (isBullish) { 
-                o705 = e - (range * 0.705); sl = s - (range * 0.05); tp = e + (range * 0.27);
+                o705 = e - (range * 0.705); 
+                sl = s - (range * 0.05); 
+                tp = e + (range * 0.27);
                 stratLabel.innerText = "Bullish Setup Confirmed";
                 stratLabel.style.color = "var(--neon-g)";
                 stratBox.style.borderLeftColor = "var(--neon-g)";
+                document.getElementById('strat-desc').innerHTML = `Entry <b>Buy Limit</b> di <b>${o705.toFixed(2)}</b>. SL di bawah <b>${sl.toFixed(2)}</b>.`;
             } else { 
-                o705 = e + (range * 0.705); sl = s + (range * 0.05); tp = e - (range * 0.27);
+                o705 = e + (range * 0.705); 
+                sl = s + (range * 0.05); 
+                tp = e - (range * 0.27);
                 stratLabel.innerText = "Bearish Setup Confirmed";
                 stratLabel.style.color = "var(--neon-r)";
                 stratBox.style.borderLeftColor = "var(--neon-r)";
+                document.getElementById('strat-desc').innerHTML = `Entry <b>Sell Limit</b> di <b>${o705.toFixed(2)}</b>. SL di atas <b>${sl.toFixed(2)}</b>.`;
             }
 
-            document.getElementById('strat-desc').innerHTML = `Entry <b>${isBullish ? 'Buy' : 'Sell'} Limit</b> di <b>${o705.toFixed(2)}</b>. SL di ${isBullish ? 'bawah' : 'atas'} <b>${sl.toFixed(2)}</b>.`;
-
+            // DYNAMIC WIN RATE LOGIC
             let baseWR = 82;
             if (currentSess.includes("LONDON") || currentSess.includes("NEW_YORK")) baseWR += 5;
             const risk = Math.abs(o705 - sl);
@@ -195,6 +205,7 @@
             const finalWRVal = baseWR + (Math.random() * 2.5);
             const finalWRText = finalWRVal.toFixed(1) + "%";
 
+            // UPDATE VISUAL SENTIMENT BAR
             const bullBar = document.getElementById('bull-bar');
             const bearBar = document.getElementById('bear-bar');
             const sentPct = document.getElementById('sent-pct');
@@ -211,6 +222,7 @@
                 sentPct.style.color = "var(--neon-r)";
             }
 
+            // MENGISI DATA HASIL AKHIR
             document.getElementById('r62').innerText = (isBullish ? e - (range * 0.62) : e + (range * 0.62)).toFixed(3);
             document.getElementById('r705').innerText = o705.toFixed(3);
             document.getElementById('r79').innerText = (isBullish ? e - (range * 0.79) : e + (range * 0.79)).toFixed(3);
@@ -218,10 +230,11 @@
             document.getElementById('rTP').innerText = tp.toFixed(3);
             document.getElementById('rWin').innerText = finalWRText;
             
+            // UPDATE STATUS LIKUIDITAS
             document.getElementById('liq-status').innerText = rrr >= 2 ? "HIGH_PROB" : "MODERATE";
             document.activeElement.blur();
         }
     </script>
 </body>
     </html>
-    
+                
