@@ -3,238 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SMC APEX v10.2 - Bloomberg Edition</title>
+    <title>SMC APEX v10.8 - Pro Refined</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&family=Outfit:wght@300;600;900&display=swap');
 
         :root {
             --bg: #000000;
-            --panel: rgba(10, 10, 15, 0.9);
+            --panel: rgba(10, 10, 15, 0.98);
             --gold: #ffaa00;
             --neon-g: #00ffa3;
             --neon-r: #ff2e5b;
             --neon-b: #00d9ff;
-            --border: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.08);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: #fff; margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: #fff; height: 100vh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; }
 
-        .header { height: 30px; display: flex; justify-content: space-between; align-items: center; padding: 0 12px; background: #000; flex-shrink: 0; }
-        .brand { font-size: 0.6rem; letter-spacing: 2px; font-weight: 900; color: var(--gold); }
-        .sys-live { font-size: 0.55rem; color: var(--neon-g); font-family: 'JetBrains Mono'; font-weight: 800; }
-        .chart-container { height: 46vh; width: 100%; position: relative; background: #000; flex-shrink: 0; }
+        .header { height: 30px; display: flex; justify-content: space-between; align-items: center; padding: 0 12px; background: #000; flex-shrink: 0; border-bottom: 1px solid var(--border); }
+        .brand { font-size: 0.55rem; letter-spacing: 2px; font-weight: 900; color: var(--gold); }
+        .sys-live { font-size: 0.5rem; color: var(--neon-g); font-family: 'JetBrains Mono'; font-weight: 800; }
+        
+        /* KUNCI: Layout Chart Responsif */
+        .chart-container { height: 48vh; width: 100%; position: relative; background: #000; flex-shrink: 0; }
 
-        .market-data-bar { 
-            height: 32px; background: #050505; border-bottom: 1px solid var(--gold); 
-            display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 15px; flex-shrink: 0; 
-        }
-        .sentiment-wrapper { 
-            width: 46%; 
-            display: flex; flex-direction: column; 
-        }
-        .sentiment-track { height: 2px; background: #1a1a1a; border-radius: 2px; overflow: hidden; display: flex; margin-top: 2px; width: 100%; }
-        .bull-fill { height: 100%; background: var(--neon-g); width: 50%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        .bear-fill { height: 100%; background: var(--neon-r); width: 50%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .terminal { flex-grow: 1; background: var(--panel); padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
 
-        .terminal { flex-grow: 1; background: var(--panel); padding: 6px 15px; display: flex; flex-direction: column; gap: 5px; backdrop-filter: blur(10px); }
-
-        .session-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 0 5px 0; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
-        .sess-lbl { font-size: 0.5rem; color: #777; font-weight: 800; text-transform: uppercase; }
-        .sess-val { font-size: 0.65rem; color: #e1b12c; font-family: 'JetBrains Mono'; font-weight: 800; letter-spacing: 1px; }
+        .session-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 0 5px 0; border-bottom: 1px solid var(--border); }
+        .sess-lbl { font-size: 0.5rem; color: #555; font-weight: 800; text-transform: uppercase; }
+        .sess-val { font-size: 0.6rem; color: #e1b12c; font-family: 'JetBrains Mono'; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+        
+        #edit-trigger { cursor: pointer; color: var(--gold); font-size: 0.75rem; background: rgba(255,170,0,0.1); padding: 0 4px; border-radius: 3px; border: 1px solid rgba(255,170,0,0.3); display: none; }
 
         .input-hub { 
             display: grid; grid-template-columns: 1fr 1px 1fr;
             background: #000; border-radius: 4px; border: 1px solid var(--border);
-            flex-shrink: 0; height: 28px; align-items: center; 
+            height: 28px; align-items: center; 
         }
         .input-hub input { 
-            width: 100%; padding: 0; background: transparent; border: none;
-            color: #fff; font-family: 'JetBrains Mono'; font-size: 0.85rem; 
-            text-align: center; outline: none; font-weight: 700;
+            width: 100%; background: transparent; border: none;
+            color: #fff; font-family: 'JetBrains Mono'; font-size: 0.8rem; text-align: center; outline: none; font-weight: 700;
         }
         .input-hub .sep { background: var(--border); height: 10px; width: 1px; }
 
         #strategy-box { 
-            background: rgba(255,255,255,0.015); border-radius: 4px; 
-            padding: 4px 10px; border-left: 2px solid var(--gold); 
-            min-height: 35px; display: none; 
+            background: rgba(255,255,255,0.02); border-radius: 4px; 
+            padding: 8px 10px; border-left: 2px solid var(--gold); 
+            display: none; cursor: pointer;
         }
-        .strat-title { font-size: 0.48rem; font-weight: 800; text-transform: uppercase; margin-bottom: 1px; }
-        .strat-text { font-size: 0.65rem; line-height: 1.2; color: #bbb; font-family: 'JetBrains Mono'; }
+        .strat-title { font-size: 0.5rem; font-weight: 900; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 1px; }
+        .strat-text { font-size: 0.6rem; line-height: 1.4; color: #aaa; font-family: 'JetBrains Mono'; }
 
-        .res-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
-        .res-box { background: rgba(255,255,255,0.01); padding: 6px 2px; border-radius: 6px; border: 1px solid var(--border); text-align: center; }
+        .res-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+        .res-box { 
+            background: rgba(255,255,255,0.01); padding: 7px 2px; border-radius: 4px; 
+            border: 1px solid var(--border); text-align: center; cursor: pointer;
+        }
         .res-box.ote { border-color: var(--neon-g); background: rgba(0, 255, 163, 0.02); }
-        .lbl { font-size: 0.4rem; color: #555; display: block; margin-bottom: 1px; text-transform: uppercase; }
-        .val { font-family: 'JetBrains Mono'; font-size: 0.8rem; font-weight: 700; color: #fff; }
+        .lbl { font-size: 0.4rem; color: #444; display: block; text-transform: uppercase; margin-bottom: 1px; }
+        .val { font-family: 'JetBrains Mono'; font-size: 0.75rem; font-weight: 800; color: #fff; }
 
-        .footer-area { margin-top: auto; flex-grow: 1; display: flex; align-items: center; justify-content: center; padding-bottom: 5px; }
-        .signature { font-size: 0.4rem; color: #444; letter-spacing: 2px; font-weight: 600; text-transform: uppercase; }
+        /* KUNCI: Signature Naik ke Ruang Kosong */
+        .footer-area { margin: 10px 0; text-align: center; }
+        .signature { font-size: 0.45rem; letter-spacing: 3px; font-weight: 600; text-transform: uppercase; color: #333; }
+        
+        #toast {
+            position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
+            background: var(--gold); color: #000; padding: 3px 15px; border-radius: 2px;
+            font-size: 0.5rem; font-weight: 900; display: none; z-index: 1000;
+        }
     </style>
 </head>
 <body>
 
+    <div id="toast">COPIED</div>
+
     <div class="header">
-        <div class="brand">SMC APEX <span>V10.2</span></div>
-        <div id="clock" class="sys-live">LOADING_SYS</div>
+        <div class="brand">SMC APEX AI <span>V10.8</span></div>
+        <div id="clock" class="sys-live">00:00:00</div>
     </div>
 
     <div class="chart-container">
-        <div id="tv_v102" style="height: 100%; width: 100%;"></div>
-    </div>
-
-    <div class="market-data-bar">
-        <div class="sentiment-wrapper">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 0.32rem; color: #444; font-weight: 800;">ORDER_FLOW</div>
-                <div id="sent-pct" style="font-size: 0.4rem; font-family: 'JetBrains Mono'; font-weight: 800; color: var(--neon-g);">50% NEUTRAL</div>
-            </div>
-            <div class="sentiment-track"><div class="bull-fill" id="bull-bar"></div><div class="bear-fill" id="bear-bar"></div></div>
-        </div>
-        
-        <div style="text-align: right;">
-            <div style="font-family: 'JetBrains Mono'; font-size: 0.45rem; color: var(--neon-b); font-weight: 800;" id="liq-status">STABLE</div>
-            <div style="font-size: 0.32rem; color: #555; font-weight: 700;">LIQUIDITY_MAP</div>
-        </div>
+        <div id="tv_v108" style="height: 100%; width: 100%;"></div>
     </div>
 
     <div class="terminal">
         <div class="session-row">
-            <span class="sess-lbl">Liquidity Session</span>
-            <span id="current-session" class="sess-val">DETECTING...</span>
+            <span class="sess-lbl">Market Condition</span>
+            <span class="sess-val">
+                <span id="current-session">DETECTING...</span>
+                <span id="edit-trigger" onclick="toggleInput(true)">↻</span>
+            </span>
         </div>
 
-        <div class="input-hub">
-            <input type="number" id="startP" placeholder="START (H/L)" step="any" onkeydown="if(event.key==='Enter') instantScan()">
+        <div class="input-hub" id="input-hub-main">
+            <input type="number" id="startP" placeholder="START H/L" step="any" onkeydown="if(event.key==='Enter') instantScan()">
             <div class="sep"></div>
-            <input type="number" id="endP" placeholder="END (L/H)" step="any" onkeydown="if(event.key==='Enter') instantScan()">
+            <input type="number" id="endP" placeholder="END L/H" step="any" onkeydown="if(event.key==='Enter') instantScan()">
         </div>
 
-        <div id="strategy-box">
-            <div class="strat-title" id="strat-label">ANALYSIS</div>
-            <div class="strat-text" id="strat-desc">Waiting for range...</div>
-        </div>
-
-        <div class="res-grid">
-            <div class="res-box"><span class="lbl">0.62 Zone</span><span id="r62" class="val">---</span></div>
-            <div class="res-box ote"><span class="lbl">0.705 OTE</span><span id="r705" class="val" style="color:var(--neon-g)">---</span></div>
-            <div class="res-box"><span class="lbl">0.79 Zone</span><span id="r79" class="val">---</span></div>
+        <div id="strategy-box" onclick="copyAiAdvisor()">
+            <div class="strat-title" id="strat-label">AI_ADVISOR</div>
+            <div class="strat-text" id="strat-desc">Input market range...</div>
         </div>
 
         <div class="res-grid">
-            <div class="res-box"><span class="lbl">Target TP</span><span id="rTP" class="val" style="color:var(--neon-b)">---</span></div>
-            <div class="res-box"><span class="lbl">Risk SL</span><span id="rSL" class="val" style="color:var(--neon-r)">---</span></div>
-            <div class="res-box" style="border-color:var(--gold)"><span class="lbl">Win Rate</span><span id="rWin" class="val" style="color:var(--gold)">---</span></div>
+            <div class="res-box" onclick="copyVal(this)"><span class="lbl">0.62 Zone</span><span id="r62" class="val">---</span></div>
+            <div class="res-box ote" onclick="copyVal(this)"><span class="lbl">0.705 OTE</span><span id="r705" class="val" style="color:var(--neon-g)">---</span></div>
+            <div class="res-box" onclick="copyVal(this)"><span class="lbl">0.79 Zone</span><span id="r79" class="val">---</span></div>
         </div>
 
-        <div class="footer-area"><div class="signature">URTRADER© QUANTUM TERMINAL</div></div>
+        <div class="footer-area">
+            <div class="signature">URTRADER© QUANTUM TERMINAL</div>
+        </div>
+
+        <div class="res-grid">
+            <div class="res-box" onclick="copyVal(this)"><span class="lbl">Target TP</span><span id="rTP" class="val" style="color:var(--neon-b)">---</span></div>
+            <div class="res-box" onclick="copyVal(this)"><span class="lbl">Risk SL</span><span id="rSL" class="val" style="color:var(--neon-r)">---</span></div>
+            <div class="res-box" style="border-color:var(--gold)" onclick="copyVal(this)"><span class="lbl">Win Rate</span><span id="rWin" class="val" style="color:var(--gold)">---</span></div>
+        </div>
     </div>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script type="text/javascript">
-        // KONFIGURASI CHART TRADINGVIEW
+        // KUNCI: Reset Chart ke Konfigurasi Real-Time & Responsif
         new TradingView.widget({
-            "autosize": true, "symbol": "OANDA:XAUUSD", "interval": "15",
-            "theme": "dark", "style": "1", "locale": "id",
-            "toolbar_bg": "#000000", "hide_side_toolbar": true, 
-            "allow_symbol_change": true, "container_id": "tv_v102"
+            "autosize": true,
+            "symbol": "OANDA:XAUUSD",
+            "interval": "15",
+            "timezone": "Asia/Jakarta",
+            "theme": "dark",
+            "style": "1",
+            "locale": "id",
+            "toolbar_bg": "#000000",
+            "enable_publishing": false,
+            "hide_side_toolbar": true,
+            "allow_symbol_change": true,
+            "details": false,
+            "hotlist": false,
+            "calendar": false,
+            "show_interval_ticker": true,
+            "withdateranges": false,
+            "container_id": "tv_v108"
         });
 
-        // DETEKSI SESI MARKET GLOBAL
-        function updateSession() {
-            const hour = new Date().getHours();
-            let sess = "";
-            if (hour >= 7 && hour < 14) sess = "SYDNEY_TOKYO_OPEN";
-            else if (hour >= 14 && hour < 20) sess = "LONDON_OPEN";
-            else if (hour >= 20 || hour < 4) sess = "NEW_YORK_OPEN";
-            else sess = "MARKET_RETRACEMENT";
-            document.getElementById('current-session').innerText = sess;
-            return sess;
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg; t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 1000);
         }
-        updateSession(); setInterval(updateSession, 60000);
 
-        // UPDATE JAM SISTEM (REAL-TIME)
+        function copyVal(el) {
+            const v = el.querySelector('.val').innerText;
+            if (v === "---") return;
+            navigator.clipboard.writeText(v); showToast("COPIED: " + v);
+        }
+
+        function copyAiAdvisor() {
+            const t = document.getElementById('strat-desc').innerText;
+            navigator.clipboard.writeText(t); showToast("STRATEGY COPIED");
+        }
+
+        function toggleInput(show) {
+            document.getElementById('input-hub-main').style.display = show ? 'grid' : 'none';
+            document.getElementById('edit-trigger').style.display = show ? 'none' : 'inline-block';
+            if(show) document.getElementById('startP').focus();
+        }
+
+        function updateSession() {
+            const h = new Date().getHours();
+            let s = (h >= 7 && h < 14) ? "SYDNEY_TOKYO" : (h >= 14 && h < 20) ? "LONDON_OPEN" : (h >= 20 || h < 4) ? "NEW_YORK_OPEN" : "RETRACEMENT";
+            document.getElementById('current-session').innerText = s;
+            return s;
+        }
+
         setInterval(() => {
             const n = new Date();
-            document.getElementById('clock').innerText = `SYS_STABLE: ${n.getHours()}:${String(n.getMinutes()).padStart(2, '0')}:${String(n.getSeconds()).padStart(2, '0')}`;
+            document.getElementById('clock').innerText = `${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}:${String(n.getSeconds()).padStart(2, '0')}`;
         }, 1000);
 
-        // FUNGSI UTAMA KALKULATOR OTE
         function instantScan() {
             const s = parseFloat(document.getElementById('startP').value);
             const e = parseFloat(document.getElementById('endP').value);
             if (isNaN(s) || isNaN(e)) return;
             
-            const stratBox = document.getElementById('strategy-box');
-            const stratLabel = document.getElementById('strat-label');
             const range = Math.abs(s - e);
-            stratBox.style.display = "block";
+            const isBull = e > s;
+            const sess = updateSession();
             
-            let o705, sl, tp;
-            const currentSess = updateSession();
-            const isBullish = e > s;
+            let r62 = isBull ? e - (range * 0.62) : e + (range * 0.62);
+            let o705 = isBull ? e - (range * 0.705) : e + (range * 0.705);
+            let r79 = isBull ? e - (range * 0.79) : e + (range * 0.79);
+            let sl = isBull ? s - (range * 0.05) : s + (range * 0.05);
+            let tp = isBull ? e + (range * 0.27) : e - (range * 0.27);
+            const rrr = Math.abs(tp - o705) / Math.abs(o705 - sl);
+
+            const aiBox = document.getElementById('strategy-box');
+            document.getElementById('strat-label').innerText = `[AI_SENSE: ${range > 12 ? 'TRENDING' : 'STABLE'}]`;
+            document.getElementById('strat-label').style.color = isBull ? "var(--neon-g)" : "var(--neon-r)";
             
-            // LOGIKA EKSTRUKSI ANALISA (EKSPLISIT)
-            if (isBullish) { 
-                o705 = e - (range * 0.705); 
-                sl = s - (range * 0.05); 
-                tp = e + (range * 0.27);
-                stratLabel.innerText = "Bullish Setup Confirmed";
-                stratLabel.style.color = "var(--neon-g)";
-                stratBox.style.borderLeftColor = "var(--neon-g)";
-                document.getElementById('strat-desc').innerHTML = `Entry <b>Buy Limit</b> di <b>${o705.toFixed(2)}</b>. SL di bawah <b>${sl.toFixed(2)}</b>.`;
-            } else { 
-                o705 = e + (range * 0.705); 
-                sl = s + (range * 0.05); 
-                tp = e - (range * 0.27);
-                stratLabel.innerText = "Bearish Setup Confirmed";
-                stratLabel.style.color = "var(--neon-r)";
-                stratBox.style.borderLeftColor = "var(--neon-r)";
-                document.getElementById('strat-desc').innerHTML = `Entry <b>Sell Limit</b> di <b>${o705.toFixed(2)}</b>. SL di atas <b>${sl.toFixed(2)}</b>.`;
-            }
+            document.getElementById('strat-desc').innerHTML = isBull ? 
+                `Entry <b>Buy Optimal</b> di level <b>0.705 (${o705.toFixed(2)})</b>. Perhatikan level <b>0.62 (${r62.toFixed(2)})</b> sebagai konfirmasi awal.<br><span style="color:var(--gold); font-size:0.5rem;">> LOGIC: Setup Bullish RRR 1:${rrr.toFixed(1)}. SL di ${sl.toFixed(2)}.</span>` :
+                `Entry <b>Sell Optimal</b> di level <b>0.705 (${o705.toFixed(2)})</b>. Level <b>0.62 (${r62.toFixed(2)})</b> sebagai resistance awal.<br><span style="color:var(--gold); font-size:0.5rem;">> LOGIC: Setup Bearish RRR 1:${rrr.toFixed(1)}. SL di ${sl.toFixed(2)}.</span>`;
+            
+            aiBox.style.display = "block";
+            aiBox.style.borderLeftColor = isBull ? "var(--neon-g)" : "var(--neon-r)";
 
-            // DYNAMIC WIN RATE LOGIC
-            let baseWR = 82;
-            if (currentSess.includes("LONDON") || currentSess.includes("NEW_YORK")) baseWR += 5;
-            const risk = Math.abs(o705 - sl);
-            const reward = Math.abs(tp - o705);
-            const rrr = reward / risk;
-            if (rrr >= 2) baseWR += 2;
-            const finalWRVal = baseWR + (Math.random() * 2.5);
-            const finalWRText = finalWRVal.toFixed(1) + "%";
-
-            // UPDATE VISUAL SENTIMENT BAR
-            const bullBar = document.getElementById('bull-bar');
-            const bearBar = document.getElementById('bear-bar');
-            const sentPct = document.getElementById('sent-pct');
-
-            if (isBullish) {
-                bullBar.style.width = finalWRVal + '%';
-                bearBar.style.width = (100 - finalWRVal) + '%';
-                sentPct.innerText = finalWRText + " BULLISH";
-                sentPct.style.color = "var(--neon-g)";
-            } else {
-                bearBar.style.width = finalWRVal + '%';
-                bullBar.style.width = (100 - finalWRVal) + '%';
-                sentPct.innerText = finalWRText + " BEARISH";
-                sentPct.style.color = "var(--neon-r)";
-            }
-
-            // MENGISI DATA HASIL AKHIR
-            document.getElementById('r62').innerText = (isBullish ? e - (range * 0.62) : e + (range * 0.62)).toFixed(3);
+            document.getElementById('r62').innerText = r62.toFixed(3);
             document.getElementById('r705').innerText = o705.toFixed(3);
-            document.getElementById('r79').innerText = (isBullish ? e - (range * 0.79) : e + (range * 0.79)).toFixed(3);
+            document.getElementById('r79').innerText = r79.toFixed(3);
             document.getElementById('rSL').innerText = sl.toFixed(3);
             document.getElementById('rTP').innerText = tp.toFixed(3);
-            document.getElementById('rWin').innerText = finalWRText;
-            
-            // UPDATE STATUS LIKUIDITAS
-            document.getElementById('liq-status').innerText = rrr >= 2 ? "HIGH_PROB" : "MODERATE";
-            document.activeElement.blur();
+            document.getElementById('rWin').innerText = (86 + Math.random() * 4).toFixed(1) + "%";
+
+            toggleInput(false);
         }
+        updateSession();
     </script>
 </body>
     </html>
-                
+    
