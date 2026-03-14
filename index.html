@@ -7,34 +7,54 @@
     <style>
         /* PONDASI V10.9 - LOCKED & PROTECTED */
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&family=Outfit:wght@300;600;900&display=swap');
-        :root { --bg: #000000; --panel: rgba(10, 10, 15, 0.98); --gold: #ffaa00; --neon-g: #00ffa3; --neon-r: #ff2e5b; --neon-b: #00d9ff; --border: rgba(255, 255, 255, 0.08); }
+        
+        /* UPDATE: WARNA MATTE TANPA EFEK NEON/SILAU */
+        :root { 
+            --bg: #000000; 
+            --panel: rgba(10, 10, 15, 0.98); 
+            --gold: #e1b12c; 
+            --matte-g: #26de81; /* Hijau tenang */
+            --muted-r: #eb4d4b; /* Merah pudar/soft */
+            --matte-b: #45aaf2; /* Biru tenang */
+            --border: rgba(255, 255, 255, 0.08); 
+        }
+
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body { font-family: 'Outfit', sans-serif; background: var(--bg); color: #fff; height: 100vh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; }
         .header { height: 35px; display: flex; justify-content: space-between; align-items: center; padding: 0 12px; background: #000; flex-shrink: 0; border-bottom: 1px solid var(--border); }
         .brand { font-size: 0.55rem; letter-spacing: 2px; font-weight: 900; color: var(--gold); }
         
-        /* UPDATE: UKURAN JAM LEBIH BESAR */
-        .sys-live { font-size: 0.7rem; color: var(--neon-g); font-family: 'JetBrains Mono'; font-weight: 800; background: rgba(0,255,163,0.05); padding: 2px 6px; border-radius: 4px; }
+        /* Jam tetap menggunakan aksen hijau tipis */
+        .sys-live { font-size: 0.7rem; color: var(--matte-g); font-family: 'JetBrains Mono'; font-weight: 800; background: rgba(38, 222, 129, 0.05); padding: 2px 6px; border-radius: 4px; }
         
         .chart-container { height: 48vh; width: 100%; position: relative; background: #000; flex-shrink: 0; }
         .terminal { flex-grow: 1; background: var(--panel); padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
         .session-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 0 5px 0; border-bottom: 1px solid var(--border); }
         .sess-lbl { font-size: 0.5rem; color: #555; font-weight: 800; text-transform: uppercase; }
-        .sess-val { font-size: 0.6rem; color: #e1b12c; font-family: 'JetBrains Mono'; font-weight: 800; display: flex; align-items: center; gap: 6px; }
-        #edit-trigger { cursor: pointer; color: var(--gold); font-size: 0.75rem; background: rgba(255,170,0,0.1); padding: 0 4px; border-radius: 3px; border: 1px solid rgba(255,170,0,0.3); display: none; }
+        .sess-val { font-size: 0.6rem; color: var(--gold); font-family: 'JetBrains Mono'; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+        
+        #edit-trigger { cursor: pointer; color: var(--gold); font-size: 0.75rem; background: rgba(225, 177, 44, 0.1); padding: 0 4px; border-radius: 3px; border: 1px solid rgba(225, 177, 44, 0.3); display: none; }
+        
         .input-hub { display: grid; grid-template-columns: 1fr 1px 1fr; background: #000; border-radius: 4px; border: 1px solid var(--border); height: 28px; align-items: center; }
         .input-hub input { width: 100%; background: transparent; border: none; color: #fff; font-family: 'JetBrains Mono'; font-size: 0.8rem; text-align: center; outline: none; font-weight: 700; }
         .input-hub .sep { background: var(--border); height: 10px; width: 1px; }
+        
         #strategy-box { background: rgba(255,255,255,0.02); border-radius: 4px; padding: 8px 10px; border-left: 2px solid var(--gold); display: none; cursor: pointer; }
         .strat-title { font-size: 0.5rem; font-weight: 900; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 1px; }
         .strat-text { font-size: 0.6rem; line-height: 1.4; color: #aaa; font-family: 'JetBrains Mono'; }
+        
         .res-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
         .res-box { background: rgba(255,255,255,0.01); padding: 7px 2px; border-radius: 4px; border: 1px solid var(--border); text-align: center; cursor: pointer; }
-        .res-box.ote { border-color: var(--neon-g); background: rgba(0, 255, 163, 0.02); }
+        
+        /* OTE BOX - MATTE */
+        .res-box.ote { border: 0.5px solid rgba(38, 222, 129, 0.3); background: rgba(38, 222, 129, 0.02); }
+        
         .lbl { font-size: 0.4rem; color: #444; display: block; text-transform: uppercase; margin-bottom: 1px; }
         .val { font-family: 'JetBrains Mono'; font-size: 0.75rem; font-weight: 800; color: #fff; }
+        
         .footer-area { margin: 10px 0; text-align: center; }
         .signature { font-size: 0.45rem; letter-spacing: 3px; font-weight: 600; text-transform: uppercase; color: #333; }
+        
         #toast { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #000; padding: 3px 15px; border-radius: 2px; font-size: 0.5rem; font-weight: 900; display: none; z-index: 1000; }
     </style>
 </head>
@@ -58,14 +78,16 @@
         
         <div class="res-grid">
             <div class="res-box" onclick="copyVal(this)"><span class="lbl">0.62 Zone</span><span id="r62" class="val">---</span></div>
-            <div class="res-box ote" onclick="copyVal(this)"><span class="lbl">0.705 OTE</span><span id="r705" class="val" style="color:var(--neon-g)">---</span></div>
+            <div class="res-box ote" onclick="copyVal(this)"><span class="lbl">0.705 OTE</span><span id="r705" class="val" style="color:var(--matte-g)">---</span></div>
             <div class="res-box" onclick="copyVal(this)"><span class="lbl">0.79 Zone</span><span id="r79" class="val">---</span></div>
         </div>
         <div class="footer-area"><div class="signature">URTRADER© QUANTUM TERMINAL</div></div>
         <div class="res-grid">
-            <div class="res-box" onclick="copyVal(this)"><span class="lbl">Target TP</span><span id="rTP" class="val" style="color:var(--neon-b)">---</span></div>
-            <div class="res-box" onclick="copyVal(this)"><span class="lbl">Risk SL</span><span id="rSL" class="val" style="color:var(--neon-r)">---</span></div>
-            <div class="res-box" style="border-color:var(--gold)" onclick="copyVal(this)"><span class="lbl">Total Pips</span><span id="rPips" class="val" style="color:var(--gold)">+0.0 P</span></div>
+            <div class="res-box" onclick="copyVal(this)"><span class="lbl">Target TP</span><span id="rTP" class="val" style="color:var(--matte-b)">---</span></div>
+            
+            <div class="res-box" onclick="copyVal(this)"><span class="lbl">Risk SL</span><span id="rSL" class="val" style="color:var(--muted-r)">---</span></div>
+            
+            <div class="res-box" style="border: 0.5px solid rgba(225, 177, 44, 0.4)" onclick="copyVal(this)"><span class="lbl">Total Pips</span><span id="rPips" class="val" style="color:var(--gold)">+0.0 P</span></div>
         </div>
 
         <div id="strategy-box" onclick="copyAiAdvisor()">
@@ -91,7 +113,6 @@
             }
         });
 
-        // FUNGSI LOCAL STORAGE (AUTO-SAVE & LOAD)
         function saveInputs() {
             localStorage.setItem('apex_start', document.getElementById('startP').value);
             localStorage.setItem('apex_end', document.getElementById('endP').value);
@@ -102,7 +123,7 @@
             const e = localStorage.getItem('apex_end');
             if (s !== null) document.getElementById('startP').value = s;
             if (e !== null) document.getElementById('endP').value = e;
-            if (s && e) instantScan(); // Jalankan analisa otomatis jika data tersedia
+            if (s && e) instantScan();
         }
 
         function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => { t.style.display = 'none'; }, 1000); }
@@ -127,16 +148,16 @@
 
             const aiBox = document.getElementById('strategy-box');
             document.getElementById('strat-label').innerText = `[AI_SENSE: ${range > 12 ? 'TRENDING' : 'STABLE'}]`;
-            document.getElementById('strat-label').style.color = isBull ? "var(--neon-g)" : "var(--neon-r)";
+            document.getElementById('strat-label').style.color = isBull ? "var(--matte-g)" : "var(--muted-r)";
             
             let narasiStrategi = isBull ? 
                 `STRATEGI: **Dominasi Buyer tervalidasi.** Market sedang mencari likuiditas di area diskon. Entri Buy Limit di harga **${o705.toFixed(2)}** untuk mengikuti arus institusi. Stop Loss di bawah **${sl.toFixed(2)}** sebagai batas akhir pertahanan struktur.` :
                 `STRATEGI: **Arus Bearish menguat.** Harga sedang menuju zona suplai premium untuk melakukan re-distribusi. Rekomendasi Sell Limit di harga **${o705.toFixed(2)}**. Pastikan Stop Loss terjaga di atas **${sl.toFixed(2)}** untuk menghindari manipulasi harga di atas struktur.`;
             
-            document.getElementById('strat-desc').innerHTML = `${narasiStrategi}<br><span style="color:var(--gold); font-size:0.5rem;">> ACTION: Proyeksi TP di Harga ${tp.toFixed(2)} (+${pipsValue} Pips).</span>`;
+            document.getElementById('strat-desc').innerHTML = `${narasiStrategi}<br><span style="color:var(--gold); font-size:0.5rem;">> ACTION: Proyeksi TP di Harga ${tp.toFixed(2)} (${pipsValue} P).</span>`;
             
             aiBox.style.display = "block";
-            aiBox.style.borderLeftColor = isBull ? "var(--neon-g)" : "var(--neon-r)";
+            aiBox.style.borderLeftColor = isBull ? "var(--matte-g)" : "var(--muted-r)";
             document.getElementById('r62').innerText = r62.toFixed(3);
             document.getElementById('r705').innerText = o705.toFixed(3);
             document.getElementById('r79').innerText = r79.toFixed(3);
@@ -146,12 +167,10 @@
             toggleInput(false);
         }
         
-        // JALANKAN SAAT STARTUP
         window.onload = function() {
             updateSession();
             loadInputs();
         };
     </script>
 </body>
-    </html>
-    
+</html>
