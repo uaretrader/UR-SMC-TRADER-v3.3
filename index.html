@@ -55,10 +55,7 @@
             <div class="sep"></div>
             <input type="number" id="endP" placeholder="END L/H" step="any" onkeydown="if(event.key==='Enter') instantScan()">
         </div>
-        <div id="strategy-box" onclick="copyAiAdvisor()">
-            <div class="strat-title" id="strat-label">AI_ADVISOR</div>
-            <div class="strat-text" id="strat-desc">Input market range...</div>
-        </div>
+        
         <div class="res-grid">
             <div class="res-box" onclick="copyVal(this)"><span class="lbl">0.62 Zone</span><span id="r62" class="val">---</span></div>
             <div class="res-box ote" onclick="copyVal(this)"><span class="lbl">0.705 OTE</span><span id="r705" class="val" style="color:var(--neon-g)">---</span></div>
@@ -69,6 +66,11 @@
             <div class="res-box" onclick="copyVal(this)"><span class="lbl">Target TP</span><span id="rTP" class="val" style="color:var(--neon-b)">---</span></div>
             <div class="res-box" onclick="copyVal(this)"><span class="lbl">Risk SL</span><span id="rSL" class="val" style="color:var(--neon-r)">---</span></div>
             <div class="res-box" style="border-color:var(--gold)" onclick="copyVal(this)"><span class="lbl">Total Pips</span><span id="rPips" class="val" style="color:var(--gold)">+0.0 P</span></div>
+        </div>
+
+        <div id="strategy-box" onclick="copyAiAdvisor()">
+            <div class="strat-title" id="strat-label">AI_ADVISOR</div>
+            <div class="strat-text" id="strat-desc">Input market range...</div>
         </div>
     </div>
 
@@ -133,5 +135,5 @@
         updateSession();
     </script>
 </body>
-   </html>
-   
+    </html>
+    
