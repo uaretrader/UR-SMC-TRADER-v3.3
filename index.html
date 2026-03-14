@@ -3,15 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SMC APEX v10.9 - Precision 25%</title>
+    <title>SMC APEX v10.9 - Precision 25% Institutional</title>
     <style>
+        /* PONDASI V10.9 - LOCKED & PROTECTED */
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&family=Outfit:wght@300;600;900&display=swap');
         :root { --bg: #000000; --panel: rgba(10, 10, 15, 0.98); --gold: #ffaa00; --neon-g: #00ffa3; --neon-r: #ff2e5b; --neon-b: #00d9ff; --border: rgba(255, 255, 255, 0.08); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body { font-family: 'Outfit', sans-serif; background: var(--bg); color: #fff; height: 100vh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; }
-        .header { height: 30px; display: flex; justify-content: space-between; align-items: center; padding: 0 12px; background: #000; flex-shrink: 0; border-bottom: 1px solid var(--border); }
+        .header { height: 35px; display: flex; justify-content: space-between; align-items: center; padding: 0 12px; background: #000; flex-shrink: 0; border-bottom: 1px solid var(--border); }
         .brand { font-size: 0.55rem; letter-spacing: 2px; font-weight: 900; color: var(--gold); }
-        .sys-live { font-size: 0.5rem; color: var(--neon-g); font-family: 'JetBrains Mono'; font-weight: 800; }
+        
+        /* UPDATE: UKURAN JAM LEBIH BESAR */
+        .sys-live { font-size: 0.7rem; color: var(--neon-g); font-family: 'JetBrains Mono'; font-weight: 800; background: rgba(0,255,163,0.05); padding: 2px 6px; border-radius: 4px; }
+        
         .chart-container { height: 48vh; width: 100%; position: relative; background: #000; flex-shrink: 0; }
         .terminal { flex-grow: 1; background: var(--panel); padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
         .session-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 0 5px 0; border-bottom: 1px solid var(--border); }
@@ -74,7 +78,16 @@
             "autosize": true, "symbol": "BINANCE:BTCUSDT", "interval": "15",
             "timezone": "Asia/Jakarta", "theme": "dark", "style": "1", "locale": "id",
             "toolbar_bg": "#000000", "enable_publishing": false, "hide_side_toolbar": true,
-            "allow_symbol_change": true, "container_id": "tv_v109", "session": "24x7"
+            "allow_symbol_change": true, "container_id": "tv_v109", "session": "24x7",
+            /* VOLUME REMOVAL TOTAL (TICK & OVERLAY) */
+            "studies": [],
+            "disabled_features": ["volume_force_overlay", "create_volume_indicator_by_default"],
+            "overrides": {
+                "mainSeriesProperties.showPriceLine": true,
+                "paneProperties.background": "#000000",
+                "paneProperties.vertGridProperties.color": "transparent",
+                "paneProperties.horzGridProperties.color": "transparent"
+            }
         });
 
         function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => { t.style.display = 'none'; }, 1000); }
@@ -94,19 +107,18 @@
             let o705 = isBull ? e - (range * 0.705) : e + (range * 0.705);
             let r79 = isBull ? e - (range * 0.79) : e + (range * 0.79);
             let sl = isBull ? s - (range * 0.05) : s + (range * 0.05);
-            
-            // TARGET TP 25%
             let tp = isBull ? e + (range * 0.25) : e - (range * 0.25);
-            
-            // LOGIKA PIPS ADAPTIF (BTC vs GOLD)
             let pipsValue = s > 10000 ? Math.abs(tp - o705).toFixed(1) : (Math.abs(tp - o705) * 10).toFixed(1);
 
             const aiBox = document.getElementById('strategy-box');
             document.getElementById('strat-label').innerText = `[AI_SENSE: ${range > 12 ? 'TRENDING' : 'STABLE'}]`;
             document.getElementById('strat-label').style.color = isBull ? "var(--neon-g)" : "var(--neon-r)";
-            document.getElementById('strat-desc').innerHTML = isBull ? 
-                `Level 0.62 (${r62.toFixed(2)}) konfirmasi. Titik 0.705 (${o705.toFixed(2)}) OTE Buy. Batas 0.79 (${r79.toFixed(2)}) pertahanan struktur.<br><span style="color:var(--gold); font-size:0.5rem;">> LOGIC: Target TP 25% (+${pipsValue} Pips).</span>` :
-                `Level 0.62 (${r62.toFixed(2)}) resistance. 0.705 (${o705.toFixed(2)}) Sweet Spot Sell. Batas 0.79 (${r79.toFixed(2)}) pertahanan Smart Money.<br><span style="color:var(--gold); font-size:0.5rem;">> LOGIC: Target TP 25% (+${pipsValue} Pips).</span>`;
+            
+            let narasiStrategi = isBull ? 
+                `STRATEGI: **Dominasi Buyer tervalidasi.** Market sedang mencari likuiditas di area diskon. Siapkan entri Buy Limit pada harga **${o705.toFixed(2)}** untuk mengikuti arus institusi. Amankan modal dengan Stop Loss di bawah **${sl.toFixed(2)}** sebagai batas akhir pertahanan struktur.` :
+                `STRATEGI: **Arus Bearish menguat.** Harga sedang menuju zona suplai premium untuk melakukan re-distribusi. Rekomendasi Sell Limit di harga **${o705.toFixed(2)}**. Pastikan Stop Loss terjaga di atas **${sl.toFixed(2)}** untuk menghindari manipulasi harga di atas struktur.`;
+            
+            document.getElementById('strat-desc').innerHTML = `${narasiStrategi}<br><span style="color:var(--gold); font-size:0.5rem;">> ACTION: Proyeksi TP di Harga ${tp.toFixed(2)} (+${pipsValue} Pips).</span>`;
             
             aiBox.style.display = "block";
             aiBox.style.borderLeftColor = isBull ? "var(--neon-g)" : "var(--neon-r)";
@@ -121,4 +133,5 @@
         updateSession();
     </script>
 </body>
-</html>
+   </html>
+   
