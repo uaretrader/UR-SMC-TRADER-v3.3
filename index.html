@@ -51,9 +51,9 @@
             <span class="sess-val"><span id="current-session">DETECTING...</span><span id="edit-trigger" onclick="toggleInput(true)">↻</span></span>
         </div>
         <div class="input-hub" id="input-hub-main">
-            <input type="number" id="startP" placeholder="START H/L" step="any" onkeydown="if(event.key==='Enter') instantScan()">
+            <input type="number" id="startP" placeholder="START H/L" step="any" oninput="saveInputs()" onkeydown="if(event.key==='Enter') instantScan()">
             <div class="sep"></div>
-            <input type="number" id="endP" placeholder="END L/H" step="any" onkeydown="if(event.key==='Enter') instantScan()">
+            <input type="number" id="endP" placeholder="END L/H" step="any" oninput="saveInputs()" onkeydown="if(event.key==='Enter') instantScan()">
         </div>
         
         <div class="res-grid">
@@ -77,11 +77,10 @@
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script type="text/javascript">
         new TradingView.widget({
-            "autosize": true, "symbol": "BINANCE:BTCUSDT", "interval": "15",
+            "autosize": true, "symbol": "BINANCE:BTCUSDT", "interval": "5",
             "timezone": "Asia/Jakarta", "theme": "dark", "style": "1", "locale": "id",
             "toolbar_bg": "#000000", "enable_publishing": false, "hide_side_toolbar": true,
             "allow_symbol_change": true, "container_id": "tv_v109", "session": "24x7",
-            /* VOLUME REMOVAL TOTAL (TICK & OVERLAY) */
             "studies": [],
             "disabled_features": ["volume_force_overlay", "create_volume_indicator_by_default"],
             "overrides": {
@@ -91,6 +90,20 @@
                 "paneProperties.horzGridProperties.color": "transparent"
             }
         });
+
+        // FUNGSI LOCAL STORAGE (AUTO-SAVE & LOAD)
+        function saveInputs() {
+            localStorage.setItem('apex_start', document.getElementById('startP').value);
+            localStorage.setItem('apex_end', document.getElementById('endP').value);
+        }
+
+        function loadInputs() {
+            const s = localStorage.getItem('apex_start');
+            const e = localStorage.getItem('apex_end');
+            if (s !== null) document.getElementById('startP').value = s;
+            if (e !== null) document.getElementById('endP').value = e;
+            if (s && e) instantScan(); // Jalankan analisa otomatis jika data tersedia
+        }
 
         function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => { t.style.display = 'none'; }, 1000); }
         function copyVal(el) { const v = el.querySelector('.val').innerText; if (v === "---") return; navigator.clipboard.writeText(v); showToast("COPIED: " + v); }
@@ -117,7 +130,7 @@
             document.getElementById('strat-label').style.color = isBull ? "var(--neon-g)" : "var(--neon-r)";
             
             let narasiStrategi = isBull ? 
-                `STRATEGI: **Dominasi Buyer tervalidasi.** Market sedang mencari likuiditas di area diskon. Siapkan entri Buy Limit pada harga **${o705.toFixed(2)}** untuk mengikuti arus institusi. Amankan modal dengan Stop Loss di bawah **${sl.toFixed(2)}** sebagai batas akhir pertahanan struktur.` :
+                `STRATEGI: **Dominasi Buyer tervalidasi.** Market sedang mencari likuiditas di area diskon. Entri Buy Limit di harga **${o705.toFixed(2)}** untuk mengikuti arus institusi. Stop Loss di bawah **${sl.toFixed(2)}** sebagai batas akhir pertahanan struktur.` :
                 `STRATEGI: **Arus Bearish menguat.** Harga sedang menuju zona suplai premium untuk melakukan re-distribusi. Rekomendasi Sell Limit di harga **${o705.toFixed(2)}**. Pastikan Stop Loss terjaga di atas **${sl.toFixed(2)}** untuk menghindari manipulasi harga di atas struktur.`;
             
             document.getElementById('strat-desc').innerHTML = `${narasiStrategi}<br><span style="color:var(--gold); font-size:0.5rem;">> ACTION: Proyeksi TP di Harga ${tp.toFixed(2)} (+${pipsValue} Pips).</span>`;
@@ -132,7 +145,12 @@
             document.getElementById('rPips').innerText = "+" + pipsValue + " P";
             toggleInput(false);
         }
-        updateSession();
+        
+        // JALANKAN SAAT STARTUP
+        window.onload = function() {
+            updateSession();
+            loadInputs();
+        };
     </script>
 </body>
     </html>
