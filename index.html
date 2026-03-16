@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SMC APEX v10.9 - Precision 25% Institutional</title>
+    <title>SMC APEX v10.9 - Precision Institutional</title>
     <style>
         /* PONDASI V10.9 - LOCKED & PROTECTED */
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&family=Outfit:wght@300;600;900&display=swap');
@@ -21,29 +21,27 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body { font-family: 'Outfit', sans-serif; background: var(--bg); color: #fff; height: 100vh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; }
         
-        /* HEADER AREA - UPDATED FOR RIGHT ALIGNMENT */
+        /* HEADER AREA */
         .header { height: 32px; display: flex; justify-content: space-between; align-items: center; padding: 0 0 0 12px; background: #000; flex-shrink: 0; }
         .brand { font-size: 0.55rem; letter-spacing: 2px; font-weight: 900; color: var(--gold); }
         
-        /* DATE & TIME MODULE - FIT TO RIGHT */
         .sys-live { 
             font-size: 0.7rem; 
             font-family: 'JetBrains Mono'; 
             font-weight: 800; 
             background: rgba(255, 255, 255, 0.03); 
             padding: 2px 10px; 
-            border-radius: 4px 0 0 4px; /* Sudut tajam di sebelah kanan agar menempel */
+            border-radius: 4px 0 0 4px; 
             display: flex; 
             align-items: center; 
             gap: 4px; 
             border: 1px solid var(--border);
-            border-right: none; /* Menghapus border kanan agar benar-benar fit ke pinggir */
+            border-right: none;
         }
         #date-val { color: var(--gold); }
         .sep-line { color: #444; margin: 0 2px; }
         #clock { color: var(--matte-g); }
 
-        /* MODUL AI ANALYSIS BAR - STABLE ENLARGED FONT */
         .ai-analysis-bar { 
             height: 30px; 
             background: #000; 
@@ -62,7 +60,6 @@
         .ai-mode-tag { color: #fff; text-transform: uppercase; }
         .ai-mode-val { color: #ffff00; }
         
-        /* PRICE AREA WITH BTC LABEL */
         .price-group { display: flex; align-items: center; gap: 5px; }
         .coin-label { color: var(--gold); font-size: 0.7rem; opacity: 0.9; }
         .ai-live-price { color: #fff; }
@@ -74,12 +71,13 @@
         .sess-lbl { font-size: 0.5rem; color: #555; font-weight: 800; text-transform: uppercase; }
         .sess-val { font-size: 0.6rem; color: var(--gold); font-family: 'JetBrains Mono'; font-weight: 800; display: flex; align-items: center; gap: 6px; }
         
-        #edit-trigger { cursor: pointer; color: var(--gold); font-size: 0.75rem; background: rgba(225, 177, 44, 0.1); padding: 0 4px; border-radius: 3px; border: 1px solid rgba(225, 177, 44, 0.3); display: none; }
+        /* TOMBOL REFRESH/RESET (CIRCLED GREEN IN YOUR IMAGE) */
+        #edit-trigger { cursor: pointer; color: var(--gold); font-size: 0.75rem; background: rgba(225, 177, 44, 0.1); padding: 0 4px; border-radius: 3px; border: 1px solid rgba(225, 177, 44, 0.3); display: inline-block; }
         
         .input-hub { display: grid; grid-template-columns: 1fr 1px 1fr; background: #000; border-radius: 4px; border: 1px solid var(--border); height: 28px; align-items: center; }
         .input-hub input { width: 100%; background: transparent; border: none; color: #fff; font-family: 'JetBrains Mono'; font-size: 0.8rem; text-align: center; outline: none; font-weight: 700; }
         .input-hub .sep { background: var(--border); height: 10px; width: 1px; }
-        
+
         #strategy-box { background: rgba(255,255,255,0.02); border-radius: 4px; padding: 8px 10px; border-left: 2px solid var(--gold); display: none; cursor: pointer; }
         .strat-title { font-size: 0.5rem; font-weight: 900; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 1px; }
         .strat-text { font-size: 0.6rem; line-height: 1.4; color: #aaa; font-family: 'JetBrains Mono'; }
@@ -122,7 +120,7 @@
     <div class="terminal">
         <div class="session-row">
             <span class="sess-lbl">Market Condition</span>
-            <span class="sess-val"><span id="current-session">DETECTING...</span><span id="edit-trigger" onclick="toggleInput(true)">↻</span></span>
+            <span class="sess-val"><span id="current-session">DETECTING...</span><span id="edit-trigger" onclick="handleResetAndEdit()">↻</span></span>
         </div>
         <div class="input-hub" id="input-hub-main">
             <input type="number" id="startP" placeholder="START H/L" step="any" onkeydown="if(event.key==='Enter') instantScan()">
@@ -151,31 +149,17 @@
     </div>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-<script type="text/javascript">
-    new TradingView.widget({
-        "autosize": true, 
-        "symbol": "OANDA:XAUUSD", 
-        "interval": "5",
-        "timezone": "Asia/Jakarta", 
-        "theme": "dark", 
-        "style": "1", 
-        "locale": "id",
-        "toolbar_bg": "#000000", 
-        "enable_publishing": false, 
-        "hide_side_toolbar": true,
-        "allow_symbol_change": true, // Tetap aktif agar bisa mencari pair lain
-        "container_id": "tv_v109", 
-        "session": "24x7", // XAUUSD di OANDA berjalan hampir 24 jam, session ini paling aman untuk real-time
-        "disabled_features": ["volume_force_overlay", "create_volume_indicator_by_default"],
-        "overrides": {
-            "mainSeriesProperties.showPriceLine": true,
-            "paneProperties.background": "#000000",
-            "paneProperties.vertGridProperties.color": "transparent",
-            "paneProperties.horzGridProperties.color": "transparent"
-        }
-    });
+    <script type="text/javascript">
+        // TRADINGVIEW INIT
+        new TradingView.widget({
+            "autosize": true, "symbol": "OANDA:XAUUSD", "interval": "5", "timezone": "Asia/Jakarta", "theme": "dark", "style": "1", "locale": "id",
+            "toolbar_bg": "#000000", "enable_publishing": false, "hide_side_toolbar": true, "allow_symbol_change": true,
+            "container_id": "tv_v109", "session": "24x7",
+            "disabled_features": ["volume_force_overlay", "create_volume_indicator_by_default"],
+            "overrides": { "paneProperties.background": "#000000", "paneProperties.vertGridProperties.color": "transparent", "paneProperties.horzGridProperties.color": "transparent" }
+        });
 
-    // 1. REAL-TIME DATA (BINANCE API)
+        // LIVE PRICE DATA
         async function fetchLiveMarket() {
             try {
                 const response = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
@@ -185,20 +169,19 @@
                 const changeEl = document.getElementById('live-btc-change');
                 changeEl.innerText = (change > 0 ? '+' : '') + change.toFixed(2) + '%';
                 changeEl.style.color = change >= 0 ? "var(--matte-g)" : "var(--muted-r)";
-                
                 const modeEl = document.getElementById('market-mode');
                 if(Math.abs(change) < 0.2) modeEl.innerText = "ACCUMULATION";
                 else if(change > 0) modeEl.innerText = "BULLISH BIAS";
                 else modeEl.innerText = "BEARISH BIAS";
             } catch (e) {}
         }
-        setInterval(fetchLiveMarket, 10000); // Update setiap 5 detik
+        setInterval(fetchLiveMarket, 10000);
 
+        // UTILS
         function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => { t.style.display = 'none'; }, 1000); }
         function copyVal(el) { const v = el.querySelector('.val').innerText; if (v === "---") return; navigator.clipboard.writeText(v); showToast("COPIED: " + v); }
         function copyAiAdvisor() { const t = document.getElementById('strat-desc').innerText; navigator.clipboard.writeText(t); showToast("STRATEGY COPIED"); }
         function toggleInput(show) { document.getElementById('input-hub-main').style.display = show ? 'grid' : 'none'; document.getElementById('edit-trigger').style.display = show ? 'none' : 'inline-block'; if(show) document.getElementById('startP').focus(); }
-        function updateSession() { const h = new Date().getHours(); let s = (h >= 7 && h < 14) ? "SYDNEY_TOKYO" : (h >= 14 && h < 20) ? "LONDON_OPEN" : (h >= 20 || h < 4) ? "NEW_YORK_OPEN" : "RETRACEMENT"; document.getElementById('current-session').innerText = s; return s; }
         
         function updateTime() {
             const n = new Date();
@@ -207,10 +190,41 @@
         }
         setInterval(updateTime, 1000);
 
-        function instantScan() {
+        function updateSession() { 
+            const h = new Date().getHours(); 
+            let s = (h >= 7 && h < 14) ? "SYDNEY_TOKYO" : (h >= 14 && h < 20) ? "LONDON_OPEN" : (h >= 20 || h < 4) ? "NEW_YORK_OPEN" : "RETRACEMENT"; 
+            document.getElementById('current-session').innerText = s; 
+        }
+
+        // DUAL FUNCTION: RESET + SHOW INPUT
+        function handleResetAndEdit() {
+            // 1. Clear Storage
+            localStorage.removeItem('smc_apex_last_setup');
+            
+            // 2. Clear Values
+            document.getElementById('startP').value = '';
+            document.getElementById('endP').value = '';
+            document.getElementById('r62').innerText = '---';
+            document.getElementById('r705').innerText = '---';
+            document.getElementById('r79').innerText = '---';
+            document.getElementById('rSL').innerText = '---';
+            document.getElementById('rTP').innerText = '---';
+            document.getElementById('rPips').innerText = '+0.0 P';
+            document.getElementById('strategy-box').style.display = 'none';
+            
+            // 3. Show Input Area
+            toggleInput(true);
+            showToast("DATA RESET & READY");
+        }
+
+        // SCAN LOGIC
+        function instantScan(shouldHide = true) {
             const s = parseFloat(document.getElementById('startP').value);
             const e = parseFloat(document.getElementById('endP').value);
             if (isNaN(s) || isNaN(e)) return;
+
+            localStorage.setItem('smc_apex_last_setup', JSON.stringify({s, e}));
+
             const diff = e - s;
             const isBull = e > s;
             const range = Math.abs(diff);
@@ -221,13 +235,17 @@
             let tp = isBull ? e + (range * 0.25) : e - (range * 0.25);
             let pipsValue = (s > 1000) ? Math.abs(tp - o705).toFixed(1) : (Math.abs(tp - o705) * 10).toFixed(1);
             const dec = s > 100 ? 2 : 5;
+
             const aiBox = document.getElementById('strategy-box');
             document.getElementById('strat-label').innerText = `[AI_ANALYSIS: ${range > (s * 0.005) ? 'INSTITUTIONAL_EXPANSION' : 'LIQUIDITY_ACCUMULATION'}]`;
             document.getElementById('strat-label').style.color = isBull ? "var(--matte-g)" : "var(--muted-r)";
+            
             let narasiStrategi = isBull ? 
                 `BIAS: **BULLISH ORDERFLOW.** Harga sedang melakukan mitigasi pada *Discount Zone*. Konfirmasi entry pada OTE **${o705.toFixed(dec)}**. SL ditempatkan di bawah *External Liquidity* **${sl.toFixed(dec)}**.` :
                 `BIAS: **BEARISH ORDERFLOW.** Harga mereaksi *Premium Supply* untuk distribusi. Antisipasi Sell pada OTE **${o705.toFixed(dec)}**. SL dijaga ketat di atas *Swing High* **${sl.toFixed(dec)}**.`;
+            
             document.getElementById('strat-desc').innerHTML = `${narasiStrategi}<br><span style="color:var(--gold); font-size:0.5rem;">> OBJECTIVE: Target ekspansi pada level ${tp.toFixed(dec)} (Proyeksi: ${pipsValue} P).</span>`;
+            
             aiBox.style.display = "block";
             aiBox.style.borderLeftColor = isBull ? "var(--matte-g)" : "var(--muted-r)";
             document.getElementById('r62').innerText = r62.toFixed(dec);
@@ -236,10 +254,26 @@
             document.getElementById('rSL').innerText = sl.toFixed(dec);
             document.getElementById('rTP').innerText = tp.toFixed(dec);
             document.getElementById('rPips').innerText = "+" + pipsValue + " P";
-            toggleInput(false);
+            
+            if(shouldHide) toggleInput(false);
         }
-        window.onload = function() { updateSession(); updateTime(); };
+
+        window.onload = function() { 
+            updateSession(); 
+            updateTime(); 
+            fetchLiveMarket();
+            
+            const saved = localStorage.getItem('smc_apex_last_setup');
+            if(saved) {
+                const data = JSON.parse(saved);
+                document.getElementById('startP').value = data.s;
+                document.getElementById('endP').value = data.e;
+                instantScan(true);
+            } else {
+                toggleInput(true); // Jika tidak ada data, buka input secara otomatis
+            }
+        };
     </script>
 </body>
-  </html>
-                                                                                               
+     </html>
+    
