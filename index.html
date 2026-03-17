@@ -21,7 +21,6 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body { font-family: 'Outfit', sans-serif; background: var(--bg); color: #fff; height: 100vh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; }
         
-        /* HEADER AREA */
         .header { height: 32px; display: flex; justify-content: space-between; align-items: center; padding: 0 0 0 12px; background: #000; flex-shrink: 0; }
         .brand { font-size: 0.55rem; letter-spacing: 2px; font-weight: 900; color: var(--gold); }
         
@@ -71,7 +70,6 @@
         .sess-lbl { font-size: 0.5rem; color: #555; font-weight: 800; text-transform: uppercase; }
         .sess-val { font-size: 0.6rem; color: var(--gold); font-family: 'JetBrains Mono'; font-weight: 800; display: flex; align-items: center; gap: 6px; }
         
-        /* TOMBOL REFRESH/RESET (CIRCLED GREEN IN YOUR IMAGE) */
         #edit-trigger { cursor: pointer; color: var(--gold); font-size: 0.75rem; background: rgba(225, 177, 44, 0.1); padding: 0 4px; border-radius: 3px; border: 1px solid rgba(225, 177, 44, 0.3); display: inline-block; }
         
         .input-hub { display: grid; grid-template-columns: 1fr 1px 1fr; background: #000; border-radius: 4px; border: 1px solid var(--border); height: 28px; align-items: center; }
@@ -135,7 +133,7 @@
         </div>
 
         <div class="res-grid">
-            <div class="res-box" onclick="copyVal(this)"><span class="lbl">Target TP</span><span id="rTP" class="val" style="color:var(--matte-b)">---</span></div>
+            <div class="res-box" onclick="copyVal(this)"><span class="lbl">Target TP (23%)</span><span id="rTP" class="val" style="color:var(--matte-b)">---</span></div>
             <div class="res-box" onclick="copyVal(this)"><span class="lbl">Risk SL</span><span id="rSL" class="val" style="color:var(--muted-r)">---</span></div>
             <div class="res-box" style="border: 0.5px solid rgba(225, 177, 44, 0.4)" onclick="copyVal(this)"><span class="lbl">Total Pips</span><span id="rPips" class="val" style="color:var(--gold)">+0.0 P</span></div>
         </div>
@@ -196,12 +194,8 @@
             document.getElementById('current-session').innerText = s; 
         }
 
-        // DUAL FUNCTION: RESET + SHOW INPUT
         function handleResetAndEdit() {
-            // 1. Clear Storage
             localStorage.removeItem('smc_apex_last_setup');
-            
-            // 2. Clear Values
             document.getElementById('startP').value = '';
             document.getElementById('endP').value = '';
             document.getElementById('r62').innerText = '---';
@@ -211,13 +205,11 @@
             document.getElementById('rTP').innerText = '---';
             document.getElementById('rPips').innerText = '+0.0 P';
             document.getElementById('strategy-box').style.display = 'none';
-            
-            // 3. Show Input Area
             toggleInput(true);
             showToast("DATA RESET & READY");
         }
 
-        // SCAN LOGIC
+        // SCAN LOGIC - TP UPDATED TO 23%
         function instantScan(shouldHide = true) {
             const s = parseFloat(document.getElementById('startP').value);
             const e = parseFloat(document.getElementById('endP').value);
@@ -228,11 +220,18 @@
             const diff = e - s;
             const isBull = e > s;
             const range = Math.abs(diff);
+            
+            // Fibo Retracement
             let r62 = e - (diff * 0.62);
             let o705 = e - (diff * 0.705);
             let r79 = e - (diff * 0.79);
+            
+            // Risk (5% deep below/above range)
             let sl = isBull ? s - (range * 0.05) : s + (range * 0.05);
-            let tp = isBull ? e + (range * 0.25) : e - (range * 0.25);
+            
+            // TP UPDATED TO 23% (0.23)
+            let tp = isBull ? e + (range * 0.23) : e - (range * 0.23);
+            
             let pipsValue = (s > 1000) ? Math.abs(tp - o705).toFixed(1) : (Math.abs(tp - o705) * 10).toFixed(1);
             const dec = s > 100 ? 2 : 5;
 
@@ -241,10 +240,10 @@
             document.getElementById('strat-label').style.color = isBull ? "var(--matte-g)" : "var(--muted-r)";
             
             let narasiStrategi = isBull ? 
-                `BIAS: **BULLISH ORDERFLOW.** Harga sedang melakukan mitigasi pada *Discount Zone*. Konfirmasi entry pada OTE **${o705.toFixed(dec)}**. SL ditempatkan di bawah *External Liquidity* **${sl.toFixed(dec)}**.` :
-                `BIAS: **BEARISH ORDERFLOW.** Harga mereaksi *Premium Supply* untuk distribusi. Antisipasi Sell pada OTE **${o705.toFixed(dec)}**. SL dijaga ketat di atas *Swing High* **${sl.toFixed(dec)}**.`;
+                `BIAS: **BULLISH ORDERFLOW.** Market dalam fase ekspansi. Konfirmasi entry pada OTE **${o705.toFixed(dec)}**. SL di bawah level likuiditas **${sl.toFixed(dec)}**.` :
+                `BIAS: **BEARISH ORDERFLOW.** Distribusi supply terdeteksi. Antisipasi Sell pada OTE **${o705.toFixed(dec)}**. SL dijaga di atas level supply **${sl.toFixed(dec)}**.`;
             
-            document.getElementById('strat-desc').innerHTML = `${narasiStrategi}<br><span style="color:var(--gold); font-size:0.5rem;">> OBJECTIVE: Target ekspansi pada level ${tp.toFixed(dec)} (Proyeksi: ${pipsValue} P).</span>`;
+            document.getElementById('strat-desc').innerHTML = `${narasiStrategi}<br><span style="color:var(--gold); font-size:0.5rem;">> OBJECTIVE: Target ekspansi 23% pada level ${tp.toFixed(dec)} (Proyeksi: ${pipsValue} P).</span>`;
             
             aiBox.style.display = "block";
             aiBox.style.borderLeftColor = isBull ? "var(--matte-g)" : "var(--muted-r)";
@@ -270,10 +269,10 @@
                 document.getElementById('endP').value = data.e;
                 instantScan(true);
             } else {
-                toggleInput(true); // Jika tidak ada data, buka input secara otomatis
+                toggleInput(true);
             }
         };
     </script>
 </body>
-     </html>
+    </html>
     
